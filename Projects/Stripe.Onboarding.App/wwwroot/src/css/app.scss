@@ -1,0 +1,66 @@
+@use "../../node_modules/@picocss/pico/scss/pico" with (  
+  $enable-semantic-container: true,
+  $enable-viewport: false,
+  $enable-classes: false,  
+  $modules: ( 
+    // Theme  
+    "themes/default": false, 
+  
+    // Layout   
+    "layout/document": true, 
+    "layout/landmarks": true, 
+    "layout/section": false,
+    "layout/container": false,
+    "layout/grid": false,
+    "layout/overflow-auto": false,
+ 
+    // Content
+    "content/typography": true,
+    "content/link": true,
+    "content/button": true,
+    "content/table": true,
+    "content/embedded": false,
+    "content/code": false,
+    "content/miscs": false,
+
+    // Forms
+    "forms/basics": true,
+    "forms/checkbox-radio-switch": false,
+    "forms/input-color": false,
+    "forms/input-date": false,
+    "forms/input-file": false,
+    "forms/input-range": true, 
+    "forms/input-search": false,
+   
+    // Components
+    "components/accordion": false,
+    "components/card": true,
+    "components/dropdown": false,
+    "components/group": false,
+    "components/loading": false,
+    "components/modal": false,
+    "components/nav": false,
+    "components/progress": false,
+    "components/tooltip": false,
+
+    // Utilities
+    "utilities/accessibility": false,
+    "utilities/reduce-motion": false,
+    
+    // Theme
+    "colors/utilities": true,
+  )
+); 
+
+// Custom theme
+@use "theme/styles";
+@use "theme/schemes";
+
+// Layout
+@use "layout/body"; 
+
+// Custom components
+@use "components/input-amount";
+@use "components/priority-range";
+@use "components/invoice-table";
+@use "components/amount";

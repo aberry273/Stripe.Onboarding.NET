@@ -1,0 +1,40 @@
+ <div class="grid container">
+  <div class="panel center-vertical">
+    <nav>
+      <ul>
+        <header>
+          <hgroup>
+            <h1>Login</h1>
+          </hgroup>
+        </header>
+      </ul> 
+    </nav>
+    <!--Feed-->
+    <article>
+      <template x-if="false">
+        <strong><i>Form error</i></strong>
+      </template>
+      <div x-data="formPostback({
+        feed: $store.feedFilters.current,
+        fields: [
+          {
+            name: 'Username',
+            type: 'input',
+            placeholder: 'Username',
+            label: 'Username',
+            autocomplete: null,
+            ariaInvalid: true,
+            helper: 'error'
+          },
+          {
+            name: 'Password',
+            type: 'password',
+            placeholder: 'Password',
+            label: 'Password',
+            autocomplete: null
+          }
+        ]
+      })"></div>
+    </article> 
+  </div>
+</div>

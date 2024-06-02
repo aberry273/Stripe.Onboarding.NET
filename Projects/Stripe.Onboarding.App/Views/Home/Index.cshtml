@@ -1,0 +1,53 @@
+﻿@model BasePage
+@{
+    ViewData["Title"] = "Home page";
+}
+<section x-data="{
+    items: @System.Text.Json.JsonSerializer.Serialize(Model.Catalog)
+}">
+    <nav>
+        <ul>
+        </ul>
+    </nav>
+    <!-- Filters -->
+    <div x-transition class="grid">
+        <template x-for="(item, i) in items || []" :key="i">
+            <div>
+            <!--Card--> 
+            <article class="dense">
+                <header>
+                    <nav>
+                        <ul>
+                            <li>
+                        </ul>
+                    </nav>
+                </header>
+                <figure>
+                    <img :src="item.Image" :alt="item.Title" />
+                </figure>
+                <div x-text="item.Title"></div>
+                <footer>
+                    <nav>
+                        <ul>
+                            <li>
+                                <div x-text="`$ ${item.Amount}.00`"></div>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <button>Add to cart</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </footer>
+                </article>
+            </div>
+        </template> 
+
+        <template x-if="items == null || items.length == 0">
+          <article class="flat">
+            <header><strong>No products found</strong></header>
+          </article>
+        </template> 
+    </div> 
+</section>

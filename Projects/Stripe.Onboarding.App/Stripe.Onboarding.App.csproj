@@ -1,0 +1,119 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5334ac05-3583-4823-9d44-97410596f81b</UserSecretsId>
+    <Configurations>Debug;Release;Staging</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Compile Remove="Services\**" />
+    <Compile Remove="wwwroot\src - Copy %282%29\**" />
+    <Compile Remove="wwwroot\src - Copy\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="Services\**" />
+    <Content Remove="wwwroot\src - Copy %282%29\**" />
+    <Content Remove="wwwroot\src - Copy\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="wwwroot\src - Copy %282%29\**" />
+    <EmbeddedResource Remove="wwwroot\src - Copy\**" />
+    <None Remove="Data\**" />
+    <None Remove="Services\**" />
+    <None Remove="wwwroot\src - Copy %282%29\**" />
+    <None Remove="wwwroot\src - Copy\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\CdnController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Shared\_Layout.Backup.cshtml" />
+    <Content Remove="wwwroot\src - Copy (2)\css\app.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_amount.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_input-amount.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_invoice-table.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_priority-range.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\layout\_body.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\postcss.config.js" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_dark.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_light.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_schemes.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_styles.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\favicon\site.webmanifest" />
+    <Content Remove="wwwroot\src - Copy (2)\js\bindings\button.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\bindings\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\alerts\snackbar.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\cards\card.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\content\header.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\forms\fields\input.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\forms\fields\textArea.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\lists\feed.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\appbar.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\footer.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\navbar.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\content\contentPostsManager.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\dropdown.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\html.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\log.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\reactiveLog.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\render.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\uppercase.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\init.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\fetch.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\now.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\render.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\minimal-theme-switcher.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\darkmode.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\tabs.js" />
+    <Content Remove="wwwroot\src\js\data\contentPosts.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Shared\_Layout.Backup.cshtml.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.1" />
+    <PackageReference Include="Azure.Identity" Version="1.11.2" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Views\Partials\" />
+    <Folder Include="wwwroot\src\js\mixins\components\" />
+    <Folder Include="wwwroot\src\js\mixins\composite\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Features\Cart\Stripe.Onboarding.Features.Cart\Stripe.Onboarding.Features.Cart.csproj" />
+    <ProjectReference Include="..\..\Features\Payments\Stripe.Onboarding.Features.Payments\Stripe.Onboarding.Features.Payments.csproj" />
+    <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Common\Stripe.Onboarding.Foundations.Common.csproj" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="if exist &quot;$(TargetPath).locked&quot; del &quot;$(TargetPath).locked&quot;&#xD;&#xA;if exist &quot;$(TargetPath)&quot; if not exist &quot;$(TargetPath).locked&quot; move &quot;$(TargetPath)&quot; &quot;$(TargetPath).locked&quot;" />
+  </Target>
+
+</Project>

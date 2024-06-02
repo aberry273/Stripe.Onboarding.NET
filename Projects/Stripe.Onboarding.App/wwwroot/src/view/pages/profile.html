@@ -1,0 +1,29 @@
+<div>
+  <div x-data="formFile({
+    feed: $store.feedFilters.current,
+    postbackUrl: 'https://localhost:7220/api/AccountUser/file/test',
+    postbackType: 'POST',
+    event: 'post:created',
+    fields: [
+      {
+        label: 'File',
+        name: 'File',
+        type: 'file',
+        autocomplete: null,
+        ariaInvalid: true,
+        helper: ''
+      },
+      {
+        name: 'UserId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        placeholder: 'Whats your update?',
+        autocomplete: null,
+        ariaInvalid: true,
+        helper: '',
+        value: 'B2EDCA69-6743-4F71-969C-08DC4F9DA45C'
+      },
+    ]
+  })"></div>
+</div>

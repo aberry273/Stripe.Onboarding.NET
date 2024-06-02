@@ -1,0 +1,190 @@
+ 
+  <div x-data="modal({event: 'example-modal1', id: 'example-modal1' })"></div>
+<div x-data="{
+  init(){
+    this.$store.content.setDummyPosts()
+  } 
+}">
+  <nav>
+    <ul>
+      <header>
+        <hgroup>
+          <h1>All channels</h1>
+        </hgroup>
+      </header>
+    </ul>
+    <ul>
+      <details class="dropdown">
+        <summary>Channels</summary>
+        <ul>
+            <li><a href="#">All</a></li>
+            <li><a href="#">TV & Cinema</a></li>
+            <li><a href="#">Something else</a></li>
+            <li><a href="#">Games</a></li>
+        </ul>
+    </details>
+      <button class="material-icon flat primary" @click="$events.emit('modal-create-channel', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
+    </ul>
+  </nav>
+  <article>
+    <div style="padding-bottom:12px;" x-data="formAjax({
+      feed: $store.feedFilters.current,
+      postbackUrl: 'https://localhost:7220/api/contentpost',
+      postbackType: 'POST',
+      event: 'post:created',
+      fields: [
+        {
+          name: 'Content',
+          type: 'textarea',
+          placeholder: 'Whats your update?',
+          autocomplete: null,
+          ariaInvalid: true,
+          helper: ''
+        },
+        {
+          name: 'UserId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          placeholder: 'Whats your update?',
+          autocomplete: null,
+          ariaInvalid: true,
+          helper: '',
+          value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        },
+      ]
+    })"></div>
+</article>
+  <!--Feed-->
+  <!--
+  <div x-data="_contentPostsManager({
+    feed: $store.feedFilters.current,
+    sourceUrl: 'https://localhost:7220/api/contentpost',
+    threadUrl: 'https://localhost:7220/content/thread',
+    fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+    fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+    reviewUrl: 'https://localhost:7220/api/contentpostreview',
+    userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    channel: 'all',
+    event: 'post:created',
+    items: $store.content.items,
+  })">
+    <div x-data="appListPost({
+      items: posts
+    })"></div>
+  </div>
+</div>
+-->
+<div x-data="listCards({ items: $store.content.getDummyPosts() })"></div>
+   
+<!-- Modals -->
+<!-- Edit post -->
+<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123',
+  form: {
+    postbackUrl: 'https://localhost:7220/api/contentpost',
+    postbackType: 'POST',
+    event: 'post:created',
+    fieldPlaceholder: 'Write a reply',
+    label: 'Reply',
+      fields: [
+        {
+          name: 'Content',
+          type: 'textarea',
+          placeholder: 'Write a reply',
+          autocomplete: null,
+          helper: '',
+          clearOnSubmit: true,
+        },
+        {
+          name: 'ParentId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].id',
+        },
+        {
+          name: 'Status',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: 'Hidden',
+        },
+        {
+          name: 'ChannelId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].channelId',
+        },
+        {
+          name: 'ThreadId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].threadId',
+        },
+        {
+          name: 'Tags',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].tags',
+        },
+        {
+          name: 'Category',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].category',
+        },
+        {
+          name: 'UserId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].userId',
+        },
+      ]
+  }  })"></div>
+
+<!-- Delete post -->
+<div x-data="modal({target: 'modal-remove-post', title: 'Remove post', text: 'test 123' })"></div>
+
+<!-- Share post -->
+<div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+
+
+<!-- Modals -->
+<!-- Edit post -->
+<div x-data="modalForm({target: 'modal-create-channel', title: 'create channel', text: 'test 123',
+  form: {
+    postbackUrl: 'https://localhost:7220/api/contentpost',
+    postbackType: 'POST',
+    event: 'post:created',
+    fieldPlaceholder: 'Write a reply',
+    label: 'Reply',
+      fields: [
+        {
+          name: 'Content',
+          type: 'textarea',
+          placeholder: 'Write a reply',
+          autocomplete: null,
+          helper: '',
+          clearOnSubmit: true,
+        },
+      ]
+  }  })"></div>

@@ -1,0 +1,12 @@
+<nav>
+  <ul>
+    <strong x-text="navData.title"></strong>
+  </ul>
+  <ul>
+    <template x-for="link in navData.links">
+      <li>
+        <a :href="link.href" x-text="link.text"></a>
+      </li>
+    </template>
+  </ul>
+</nav>

@@ -1,0 +1,6 @@
+@Accelerate.Projects.App_HostAddress = http://localhost:5102
+
+GET {{Accelerate.Projects.App_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

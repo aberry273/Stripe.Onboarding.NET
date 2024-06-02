@@ -1,0 +1,77 @@
+﻿@inject Microsoft.Extensions.Hosting.IHostEnvironment env
+@model BasePage
+@{
+    var lang =  "en"; 
+}
+<!DOCTYPE html>
+<html lang="@lang">
+<head>
+    @{
+    }
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- CSS Libraries -->
+    <!-- Classbased -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.min.css" />
+    <!-- Classless - centered viewport -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.classless.min.css" /> -->
+    <!-- Classless - fluid viewport -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.fluid.classless.min.css" /> -->
+    <!-- CSS Overrides -->
+    <link rel="stylesheet" href="~/src/css/app.css" />
+    <link rel="stylesheet" href="~/src/css/overrides.css" />
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- PWA -->
+    <link rel="manifest" href="~/src/manifest.json" />
+</head>
+
+<body style="background-color: min-height: 100%; height: 100vh;">
+
+    <div class="container">
+        <!--Header-->
+        <nav x-data="{fixed: false}"
+             :class="fixed ? 'container  floating topnav' : 'topnav'"
+             style="padding: 0px 8px;">
+            <ul><li><strong><a href="/">Stripe.Shopping</a></strong></li></ul>
+            @if(Model.TopNavigation != null)
+            {
+                <ul>
+                    @foreach (var link in Model.TopNavigation)
+                    {
+                        if (link.Disabled == true)
+                        {
+                            <li>@link.Text</li>
+                        }
+                        else
+                        {
+                            <li><a href="@link.Href">@link.Text</a></li>
+                        }
+                    }
+                </ul>
+            }
+        </nav>
+        <!-- Body -->
+        @RenderBody()
+        <!--Footer--> <footer>
+            <nav>
+                <li class="pl-0">
+                    Footer
+                </li>
+                <ul>
+                    <li>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- For componentizing and lazy loading Alpine -->
+    <script type="module" src="~/src/js/init.js"></script>
+</body>
+</html>
