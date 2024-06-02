@@ -1,0 +1,16 @@
+src/Projects/*/obj/*
+src/packages/
+src/Projects/*/bin/*
+src/*/*/*/bin/*
+src/*/*/*/obj/*
+src/.vs/*/*/*
+.vs/**
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
+src/.vs/ProjectEvaluation/
+src/secrets.json
+backups/
