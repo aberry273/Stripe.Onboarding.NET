@@ -9,10 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 //var appSecretsId = "5334ac05-3583-4823-9d44-97410596f81b";
 builder.Configuration.AddUserSecrets<Program>();
-//https://learn.microsoft.com/en-us/aspnet/core/security/key-vault-configuration?view=aspnetcore-8.0
 if (builder.Environment.IsProduction())
 {
-    // Secrets
+    // PaaS Secrets provider
 }
 // enable CORS
 var localFrontendDevServer = "localFrontendDevServer";
@@ -35,7 +34,12 @@ builder.Services.AddRazorPages();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
- 
+
+// Foundations
+Stripe.Onboarding.Foundations.Integrations.Stripe.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
+// Features
+
 var isProduction = builder.Environment.IsProduction();
 
 // Add Database Exception filter

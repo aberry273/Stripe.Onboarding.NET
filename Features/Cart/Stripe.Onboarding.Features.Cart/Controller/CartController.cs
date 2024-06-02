@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Onboarding.Features.Cart.Models.Data;
 using Stripe.Onboarding.Features.Cart.Models.Views;
+using Stripe.Onboarding.Foundations.Common.Models.Components.Form;
+using System.Threading.Channels;
 using System.Web;
 
 namespace Stripe.Onboarding.Features.Cart.Controllers
@@ -10,43 +12,41 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
     public class CartController : Controller
     {
        
-        #region Payment
+        #region Checkout
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Checkout()
         {
-            /*
-            var viewModel = _accountViewService.GetResetPasswordPage(userId, code);
-
-            if (userId == null)
-            {
-                viewModel.Form.Response = "There was an error with the link that was supplied. ";
-            }
-
-            if (code == null)
-            {
-                viewModel.Form.Response += "A code must be supplied for password reset.";
-            }
-            */
             CheckoutPage paymentModel = new CheckoutPage();
+            paymentModel.CartForm = this.CreateCheckoutForm();
             return View(paymentModel);
         }
-        /*
-        public string ResetPasswordCallbackLink(string userId, string code, string scheme)
+        public Form CreateCheckoutForm()
         {
-            return this.Url.Action(
-                action: nameof(ResetPassword),
-                controller: ControllerHelper.NameOf<AccountController>(),
-                values: new { userId, code },
-                protocol: scheme);
+            var model = new Form()
+            {
+                Label = "Submit",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                    },
+                }
+            };
+            return model;
         }
-        */
+
+        
         [HttpPost]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Checkout(CartForm model)
+        public async Task<IActionResult> Checkout(CartCheckoutRequest model)
         {
-            return View(model);
+            return RedirectToAction("Pay", "Payments");
         }
         #endregion
     }

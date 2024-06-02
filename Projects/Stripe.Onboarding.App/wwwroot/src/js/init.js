@@ -40,7 +40,6 @@ Object.keys(mixins).forEach(mixin => {
     alpinejs.data(mixin, mixins[mixin]);
 });
 
-
 // Load rendering components
 import * as components from './components/index.js';
 Object.keys(components).forEach(component => {

@@ -110,6 +110,7 @@
     <ProjectReference Include="..\..\Features\Cart\Stripe.Onboarding.Features.Cart\Stripe.Onboarding.Features.Cart.csproj" />
     <ProjectReference Include="..\..\Features\Payments\Stripe.Onboarding.Features.Payments\Stripe.Onboarding.Features.Payments.csproj" />
     <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Common\Stripe.Onboarding.Foundations.Common.csproj" />
+    <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Integrations.Stripe\Stripe.Onboarding.Foundations.Integrations.Stripe.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

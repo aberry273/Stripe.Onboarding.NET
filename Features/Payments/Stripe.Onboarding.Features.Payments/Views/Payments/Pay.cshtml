@@ -3,4 +3,23 @@
 @using Microsoft.AspNetCore.Http
 @model Stripe.Onboarding.Features.Payments.Models.Views.PaymentPage
 
-<div>PAY</div>
+<!--Card-->
+<article class="dense">
+    <header>
+        <nav>
+            Payment
+        </nav>
+    </header>
+    <div>
+        <div x-data="formPostback(@System.Text.Json.JsonSerializer.Serialize(Model.PaymentForm))"></div>
+    </div>
+    <footer>
+        <nav>
+            <ul>
+                <li>
+                    <button>Back</button>
+                </li>
+            </ul>
+        </nav>
+    </footer>
+</article>

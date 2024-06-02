@@ -4,3 +4,24 @@
 @model Stripe.Onboarding.Features.Cart.Models.Views.CheckoutPage
 
 <div>checkout</div>
+
+<!--Card-->
+<article class="dense">
+    <header>
+        <nav>
+            Your cart
+        </nav>
+    </header>
+    <div>
+        <div x-data="formPostback(@System.Text.Json.JsonSerializer.Serialize(Model.CartForm))"></div>
+    </div>
+    <footer>
+        <nav>
+            <ul>
+                <li>
+                    <button>Checkout</button>
+                </li>
+            </ul>
+        </nav>
+    </footer>
+</article>
