@@ -9,5 +9,6 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Models.Config
     public class StripeConfig
     {
         public string SecretKey { get; set; }
+        public string PublicKey { get; set; }
     }
 }

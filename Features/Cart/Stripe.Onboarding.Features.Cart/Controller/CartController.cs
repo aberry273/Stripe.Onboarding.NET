@@ -11,7 +11,7 @@ using System.Web;
 
 namespace Stripe.Onboarding.Features.Cart.Controllers
 {
-    public class CartController : Controller
+    public class CartController : Microsoft.AspNetCore.Mvc.Controller
     {
         IStripeCheckoutService _stripeService { get; set; }
         public CartController(IStripeCheckoutService stripeService)
@@ -60,6 +60,8 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         public async Task<IActionResult> EmbeddedForm()
         {
             CheckoutPage paymentModel = new CheckoutPage();
+            paymentModel.PostbackUrl = this.SessionFormUrl();
+            paymentModel.PublicKey = _stripeService.Config.PublicKey;
             paymentModel.CartForm = this.CreateCheckoutForm();
             return View(paymentModel);
         }
@@ -107,6 +109,48 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
         }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateEmbeddedFormSession()
+        {
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>
+                {
+                    new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions()
+                        {
+                            UnitAmount = 100,
+                            Currency = "NZD",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions()
+                            {
+                                Description = "Test purchase",
+                                Name = "TestProduct",
+                            }
+                        },
+                        // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                        //Price = "2000",
+                        Quantity = 1,
+                    },
+                },
+                UiMode = "embedded",
+                ShippingAddressCollection = new SessionShippingAddressCollectionOptions
+                {
+                    AllowedCountries = new List<string>
+                  {
+                    "NZ",
+                  },
+                },
+                Mode = "payment",
+                ReturnUrl = this.ReturnUrl("Return?session_id={CHECKOUT_SESSION_ID}"),
+            };
+            Session session = _stripeService.CreateSession(options);
+
+            return Ok(new { clientSecret = session.RawJObject["client_secret"] });
+        }
         #endregion
         [HttpGet]
         [AllowAnonymous]
@@ -124,6 +168,22 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
                 values: new { message },
                 protocol: Request.Scheme);
         }
+        public string ReturnUrl(string message)
+        {
+            return this.Url.Action(
+                action: nameof(Success),
+                controller: "Payments",
+                values: new { message },
+                protocol: Request.Scheme);
+        }
+        public string SessionFormUrl()
+        {
+            return this.Url.Action(
+                action: nameof(CreateEmbeddedFormSession),
+                controller: "Cart",
+                values: new { },
+                protocol: Request.Scheme);
+        }
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Cancel()
@@ -137,6 +197,16 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         public async Task<IActionResult> Error()
         {
             CheckoutPage paymentModel = new CheckoutPage(); 
+            return View(paymentModel);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Return([FromQuery] string session_id)
+        {
+            CheckoutPage paymentModel = new CheckoutPage();
+
             return View(paymentModel);
         }
     }

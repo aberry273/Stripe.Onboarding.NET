@@ -24,7 +24,13 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
             _checkoutSessionService = new SessionService(_stripeClient);
             _setupIntentService = new SetupIntentService(_stripeClient);
         }
-
+        public StripeConfig Config
+        {
+            get
+            {
+                return _config;
+            }
+        }
         public Session CreateSession(SessionCreateOptions options)
         {
             return _checkoutSessionService.Create(options);

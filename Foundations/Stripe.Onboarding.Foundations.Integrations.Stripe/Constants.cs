@@ -12,6 +12,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe
         {
             public const string ConfigName = "StripeConfiguration";
             public const string SecretKey = "StripeSecretKey";
+            public const string PublicKey = "StripePublicKey";
         }
     }
 }
