@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using Stripe.Onboarding.Features.Cart.Models.Data;
 using Stripe.Onboarding.Features.Cart.Models.Views;
+using Stripe.Onboarding.Features.Cart.Services;
+using Stripe.Onboarding.Foundations.Authentication.Services;
+using Stripe.Onboarding.Foundations.Common.Controllers;
 using Stripe.Onboarding.Foundations.Common.Models.Components.Form;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
 using System.Threading.Channels;
@@ -11,12 +14,17 @@ using System.Web;
 
 namespace Stripe.Onboarding.Features.Cart.Controllers
 {
-    public class CartController : Microsoft.AspNetCore.Mvc.Controller
+    public class CartController : BaseController
     {
         IStripeCheckoutService _stripeService { get; set; }
-        public CartController(IStripeCheckoutService stripeService)
+        ICartSessionService _cartSessionService { get; set; }
+        public CartController(
+            IStripeCheckoutService stripeService,
+            ICartSessionService cartSessionService,
+            IMockAuthenticationService authService) : base(authService)
         {
             _stripeService = stripeService;
+            _cartSessionService = cartSessionService;
         }
 
         #region Checkout
@@ -80,8 +88,11 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> CheckoutHostedPage(CartCheckoutRequest model)
+        public async Task<IActionResult> CheckoutHostedPage(SessionCart model)
         {
+            var cart = _cartSessionService.GetCart(this.GetSessionUser());
+             
+
             var options = new SessionCreateOptions
             {
                 LineItems = new List<SessionLineItemOptions>

@@ -1,9 +1,18 @@
-﻿@model BasePage
+﻿@model Stripe.Onboarding.App.Models.View.ProductListingPage
 @{
     ViewData["Title"] = "Home page";
 }
 <section x-data="{
-    items: @System.Text.Json.JsonSerializer.Serialize(Model.Catalog)
+    items: @System.Text.Json.JsonSerializer.Serialize(Model.Catalog),
+    userId: '@Model.UserId',
+    async addToCart(item) {
+        const result = await this.$fetch.POST('@Model.CartPostbackUrl', {
+            userId: '@Model.UserId',
+            productId: item.Id,
+            quantity: 1,
+        })
+        console.log(result);
+    }
 }">
     <nav>
         <ul>
@@ -35,7 +44,7 @@
                         </ul>
                         <ul>
                             <li>
-                                <button>Add to cart</button>
+                                <button @@click="addToCart(item)">Add to cart</button>
                             </li>
                         </ul>
                     </nav>

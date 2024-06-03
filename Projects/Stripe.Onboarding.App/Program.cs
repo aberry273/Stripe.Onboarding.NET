@@ -54,8 +54,11 @@ builder.Services.AddSwaggerGen();
 
 // Foundations
 Stripe.Onboarding.Foundations.Integrations.Stripe.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Stripe.Onboarding.Foundations.Products.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Stripe.Onboarding.Foundations.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Features
+Stripe.Onboarding.Features.Cart.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 var isProduction = builder.Environment.IsProduction();
 
@@ -116,6 +119,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapRazorPages();
 app.MapControllers();

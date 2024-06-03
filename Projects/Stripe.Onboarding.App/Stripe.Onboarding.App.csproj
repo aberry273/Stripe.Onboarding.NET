@@ -49,7 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="Views\Partials\" />
     <Folder Include="wwwroot\src\js\mixins\components\" />
     <Folder Include="wwwroot\src\js\mixins\composite\" />
@@ -58,8 +57,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Features\Cart\Stripe.Onboarding.Features.Cart\Stripe.Onboarding.Features.Cart.csproj" />
     <ProjectReference Include="..\..\Features\Payments\Stripe.Onboarding.Features.Payments\Stripe.Onboarding.Features.Payments.csproj" />
+    <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Authentication\Stripe.Onboarding.Foundations.Authentication.csproj" />
     <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Common\Stripe.Onboarding.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Integrations.Stripe\Stripe.Onboarding.Foundations.Integrations.Stripe.csproj" />
+    <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Products\Stripe.Onboarding.Foundations.Products.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

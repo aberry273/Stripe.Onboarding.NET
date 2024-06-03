@@ -9,14 +9,19 @@ using static Stripe.Onboarding.Foundations.Common.Constants;
 using Stripe;
 using Stripe.Checkout;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
+using Stripe.Onboarding.Foundations.Common.Controllers;
+using Stripe.Onboarding.Foundations.Authentication.Services;
 
 namespace Stripe.Onboarding.Features.Payments.Controllers
 {
-    public class PaymentsController : Controller
+    public class PaymentsController : BaseController
     {
         public IStripeCheckoutService _stripeService { get; set; }
         public string Domain { get; set; }
-        public PaymentsController(IConfiguration configuration, IStripeCheckoutService stripeService)
+        public PaymentsController(
+            IConfiguration configuration,
+            IMockAuthenticationService authService,
+            IStripeCheckoutService stripeService) : base(authService)
         {
             this.Domain = configuration[Foundations.Common.Constants.Settings.DomainKey];
             _stripeService = stripeService;
@@ -55,7 +60,7 @@ namespace Stripe.Onboarding.Features.Payments.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Pay(PaymentFormRequest model)
+        public async Task<IActionResult> Pay(PaymentIntentRequest model)
         { 
             var options = new SessionCreateOptions
             {

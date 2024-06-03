@@ -3,54 +3,34 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Evaluation;
+using Stripe.Onboarding.App.Models.View;
+using Stripe.Onboarding.Foundations.Authentication.Services;
+using Stripe.Onboarding.Foundations.Common.Controllers;
 using Stripe.Onboarding.Foundations.Common.Models;
+using Stripe.Onboarding.Foundations.Products.Services;
 
 namespace Stripe.Onboarding.App.Controllers
 {
     //[Authorize]
     public class HomeController : BaseController
     {
-        public HomeController() : base()
+        IProductCatalogService _productCatalogService;
+        public HomeController(IMockAuthenticationService authService, IProductCatalogService productCatalogService) : base(authService)
         {
+            _productCatalogService = productCatalogService;
         }
-        private BasePage CreateBaseContent()
+
+
+        private BasePage CreateProductListingPage()
         { 
-            var model = new BasePage();
-            model.TopNavigation = new List<NavigationItem>()
-            {
-                new NavigationItem()
-                {
-                    Disabled = false,
-                    Href = "/Cart/Checkout",
-                    Text = "Cart"
-                },
-            };
-            model.Catalog = new List<ProductItem>()
-            {
-                new ProductItem() {
-                    Image = "https://placehold.co/600x400",
-                    Id = Guid.NewGuid().ToString(),
-                    Title = "The Art of Doing Science and Engineering",
-                    Amount = 2300
-                },
-                new ProductItem() {
-                    Image = "https://placehold.co/600x400",
-                    Id = Guid.NewGuid().ToString(),
-                    Title = "The Making of Prince of Persia: Journals 1985-1993",
-                    Amount = 2500
-                },
-                new ProductItem() {
-                    Image = "https://placehold.co/600x400",
-                    Id = Guid.NewGuid().ToString(),
-                    Title = "Working in Public: The Making and Maintenance of Open Source",
-                    Amount = 2800
-                },
-            };
+            var model = new ProductListingPage(this.CreateBaseContent());
+            model.Catalog = _productCatalogService.GetCatalog();
+            model.CartPostbackUrl = "/api/cartsession";
             return model;
         }
         public IActionResult Index()
         {
-            var model = this.CreateBaseContent();
+            var model = this.CreateProductListingPage();
             return View(model);
         }
 
