@@ -37,6 +37,9 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
         }
         public Session GetCheckoutSession(string id)
         {
+            SessionGetOptions options = new SessionGetOptions()
+            {
+            };
             return _checkoutSessionService.Get(id);
         }
         public SetupIntent GetSetupIntent(string id)

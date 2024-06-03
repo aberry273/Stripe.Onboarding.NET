@@ -8,16 +8,17 @@
     <header>
         <nav>
             Payment
+            <span x-text="@Model.Status"></span>
         </nav>
     </header>
     <div>
-        <div x-data="formPostback(@System.Text.Json.JsonSerializer.Serialize(Model.PaymentForm))"></div>
+        Your payment was successful! Thank you for your purchase <b x-text="@Model.CustomerEmail"></b>.
     </div>
     <footer>
         <nav>
             <ul>
                 <li>
-                    <button>Back</button>
+                    <button>Home</button>
                 </li>
             </ul>
         </nav>

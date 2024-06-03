@@ -8,15 +8,18 @@ using Microsoft.Extensions.Options;
 using static Stripe.Onboarding.Foundations.Common.Constants;
 using Stripe;
 using Stripe.Checkout;
+using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
 
 namespace Stripe.Onboarding.Features.Payments.Controllers
 {
     public class PaymentsController : Controller
     {
+        public IStripeCheckoutService _stripeService { get; set; }
         public string Domain { get; set; }
-        public PaymentsController(IConfiguration configuration)
+        public PaymentsController(IConfiguration configuration, IStripeCheckoutService stripeService)
         {
             this.Domain = configuration[Foundations.Common.Constants.Settings.DomainKey];
+            _stripeService = stripeService;
         }
 
 
@@ -80,9 +83,13 @@ namespace Stripe.Onboarding.Features.Payments.Controllers
         #region
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Success()
+        public async Task<IActionResult> Success([FromQuery] string session_id)
         {
             PaymentPage paymentModel = new PaymentPage();
+
+            var session = _stripeService.GetCheckoutSession(session_id);
+            paymentModel.Status = session.Status;
+            paymentModel.CustomerEmail = session.CustomerEmail;
             paymentModel.PaymentForm = this.CreatePaymentForm();
             return View(paymentModel);
         }

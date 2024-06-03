@@ -52,6 +52,9 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         public async Task<IActionResult> CustomFlow()
         {
             CheckoutPage paymentModel = new CheckoutPage();
+            paymentModel.ReturnUrl = this.ReturnUrl();
+            paymentModel.PublicKey = _stripeService.Config.PublicKey;
+            paymentModel.PostbackUrl = this.PaymentIntentUrl();
             paymentModel.CartForm = this.CreateCheckoutForm();
             return View(paymentModel);
         }
@@ -110,7 +113,7 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             return new StatusCodeResult(303);
         }
 
-
+        //https://docs.stripe.com/checkout/embedded/quickstart
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> CreateEmbeddedFormSession()
@@ -145,7 +148,7 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
                   },
                 },
                 Mode = "payment",
-                ReturnUrl = this.ReturnUrl("Return?session_id={CHECKOUT_SESSION_ID}"),
+                ReturnUrl = this.ReturnUrl()+ "?session_id={CHECKOUT_SESSION_ID}",
             };
             Session session = _stripeService.CreateSession(options);
 
@@ -168,12 +171,20 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
                 values: new { message },
                 protocol: Request.Scheme);
         }
-        public string ReturnUrl(string message)
+        public string ReturnUrl()
         {
             return this.Url.Action(
                 action: nameof(Success),
                 controller: "Payments",
-                values: new { message },
+                values: new {  },
+                protocol: Request.Scheme);
+        }
+        public string CartReturnUrl()
+        {
+            return this.Url.Action(
+                action: nameof(Success),
+                controller: "Cart",
+                values: new { },
                 protocol: Request.Scheme);
         }
         public string SessionFormUrl()
@@ -181,6 +192,14 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             return this.Url.Action(
                 action: nameof(CreateEmbeddedFormSession),
                 controller: "Cart",
+                values: new { },
+                protocol: Request.Scheme);
+        }
+        public string PaymentIntentUrl()
+        {
+            return this.Url.Action(
+                action: "PaymentIntent",
+                controller: "Payments",
                 values: new { },
                 protocol: Request.Scheme);
         }

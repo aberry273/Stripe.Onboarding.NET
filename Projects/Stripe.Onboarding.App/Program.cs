@@ -14,6 +14,7 @@ if (builder.Environment.IsProduction())
     // PaaS Secrets provider
 }
 // enable CORS
+var stripeCheckout = "stripeCheckout";
 var localFrontendDevServer = "localFrontendDevServer";
 builder.Services.AddCors(options =>
 {
@@ -25,6 +26,22 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowCredentials();
         });
+
+    options.AddPolicy(name: stripeCheckout,
+        policy =>
+        {
+            policy.WithOrigins(
+                "https://checkout.stripe.com",
+                "https://*.stripe.com",
+                "https://api.stripe.com",
+                "https://maps.googleapis.com",
+                "https://js.stripe.com"
+                )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
+
 });
 
 // Add services to the container.
