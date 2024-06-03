@@ -6,22 +6,63 @@
 <div>checkout</div>
 
 <!--Card-->
-<article class="dense">
-    <header>
-        <nav>
-            Your cart
-        </nav>
-    </header>
-    <div>
-        <div x-data="formPostback(@System.Text.Json.JsonSerializer.Serialize(Model.CartForm))"></div>
-    </div>
-    <footer>
-        <nav>
-            <ul>
-                <li>
-                    <button>Checkout</button>
-                </li>
-            </ul>
-        </nav>
-    </footer>
-</article>
+<div class="grid">
+
+    <article class="dense">
+        <header>
+            <nav>
+                <strong>Hosted Page</strong>
+            </nav>
+        </header>
+        <div>
+            For businesses that need to quickly implement payments, do not require additional customisation
+        </div>
+        <footer>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="/Cart/HostedPage">Try it out</a>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+    </article>
+
+    <article class="dense">
+        <header>
+            <strong>Embedded Form</strong>
+        </header>
+        <div>
+            For businesses that need to quickly implement payments but want their users to stay on their site
+        </div>
+        <footer>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="/Cart/EmbeddedForm">Try it out</a>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+    </article>
+
+    <article class="dense">
+        <header>
+            <nav>
+                <strong>Custom Flow</strong>
+            </nav>
+        </header>
+        <div>
+            For businesses that require a customised payment flow, typically non-standard eCommerce sites and products
+        </div>
+        <footer>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="/Cart/CustomFlow">Try it out</a>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+    </article>
+</div>

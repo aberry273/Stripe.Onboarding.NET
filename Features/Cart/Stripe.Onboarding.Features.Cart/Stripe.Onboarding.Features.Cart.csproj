@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Stripe.net" Version="44.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Common\Stripe.Onboarding.Foundations.Common.csproj" />
+    <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Integrations.Stripe\Stripe.Onboarding.Foundations.Integrations.Stripe.csproj" />
   </ItemGroup>
 
 </Project>

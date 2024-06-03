@@ -1,24 +1,27 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
 @using Microsoft.AspNetCore.Http
-@model Stripe.Onboarding.Features.Payments.Models.Views.PaymentPage
+@model Stripe.Onboarding.Features.Cart.Models.Views.CheckoutPage
+
+<div>checkout</div>
 
 <!--Card-->
 <article class="dense">
     <header>
         <nav>
-            Payment
+            Your cart
         </nav>
     </header>
-    <div> 
-        <div x-data="formPostback(@System.Text.Json.JsonSerializer.Serialize(Model.PaymentForm))"></div>
-        
+    <div>
+        <form action="/cart/CheckoutHostedPage" method="POST">
+            <button type="submit" id="checkout-button">Stripe Hosted Checkout</button>
+        </form>
     </div>
     <footer>
         <nav>
             <ul>
                 <li>
-                    <button>Back</button>
+                    <button>Cancel</button>
                 </li>
             </ul>
         </nav>

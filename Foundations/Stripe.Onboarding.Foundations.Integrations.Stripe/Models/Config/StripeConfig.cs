@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Models.Config
 {
-    public class StripeConfiguration
+    public class StripeConfig
     {
         public string SecretKey { get; set; }
     }
