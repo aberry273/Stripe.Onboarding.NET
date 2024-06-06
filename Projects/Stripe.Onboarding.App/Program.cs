@@ -11,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 if (builder.Environment.IsProduction())
 {
-    // PaaS Secrets provider
+    builder.Configuration.AddAzureKeyVault(
+        new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
+        new DefaultAzureCredential());
 }
 // enable CORS
 var stripeCheckout = "stripeCheckout";
