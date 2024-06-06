@@ -1,0 +1,74 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- dev
+
+
+stages:
+- stage: Build
+  jobs: 
+  - job: Build
+
+    pool:
+      vmImage: 'windows-latest'
+
+    variables:
+      solution: '**/*.sln'
+      project: '**/Stripe.Onboarding.csproj'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'      
+
+    steps:
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(project)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'  
+    
+- stage: DeployWebApp
+  displayName: 'Deploy the web app'
+  dependsOn: Build
+  condition: |
+    succeeded()    
+  
+  jobs: 
+  - job: DeployWebApp
+    displayName: 'Deploy Web App'
+    pool: 
+      vmImage: 'windows-latest'
+    
+    steps:
+      
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
+    
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Personal PAYG(070794bf-2979-487e-a00a-f7c72c5576f7)'
+        appType: 'webApp'
+        WebAppName: 'stripesandbox'
+        DeploymentType: zipDeploy
+        RemoveAdditionalFilesFlag: true
+        SlotName: deploy        
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
