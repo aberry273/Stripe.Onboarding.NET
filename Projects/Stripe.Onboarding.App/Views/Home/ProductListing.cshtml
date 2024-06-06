@@ -1,0 +1,120 @@
+﻿@model Stripe.Onboarding.App.Models.View.ProductListingPage
+@{
+    ViewData["Title"] = "Home page";
+}
+<section x-data="{
+    items: @System.Text.Json.JsonSerializer.Serialize(Model.Catalog),
+    userId: '@Model.UserId',
+    get oneOffItems() {
+        return this.items.filter(x => !x.IsRecurring);
+    },
+    get recurringItems() {
+        return this.items.filter(x => x.IsRecurring);
+    },
+    async addToCart(item) {
+        console.log('addToCart');
+        const result = await this.$fetch.POST('@Model.CartPostbackUrl', {
+            userId: '@Model.UserId',
+            productId: item.Id,
+            quantity: 1,
+        })
+        this.$events.emit('addToCart', result);
+    }
+}">
+    <nav>
+        <header>
+            <hgroup>
+                <h1>Browse products</h1>
+            </hgroup>
+        </header>
+    </nav>
+    <!-- Filters -->
+    <div x-transition class="grid">
+        <template x-for="(item, i) in oneOffItems || []" :key="i">
+            <div>
+            <!--Card--> 
+            <article class="dense">
+                <header>
+                    <nav>
+                        <ul>
+                            <li>
+                        </ul>
+                    </nav>
+                </header>
+                <figure>
+                    <img style="max-height:200px; max-width: 200px;"  :src="item.Image" :alt="item.Title" />
+                </figure>
+                <div x-text="item.Title"></div>
+                <footer>
+                    <nav>
+                        <ul>
+                            <li>
+                                <div x-text="`$ ${item.Amount}.00`"></div>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <button @@click="addToCart(item)">Add</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </footer>
+                </article>
+            </div>
+        </template> 
+
+        <template x-if="items == null || items.length == 0">
+          <article class="flat">
+            <header><strong>No products found</strong></header>
+          </article>
+        </template> 
+    </div>
+    <nav>
+        <header>
+            <hgroup>
+                <h1>Browse subscriptions</h1>
+            </hgroup>
+        </header>
+    </nav>
+    <!-- Filters -->
+    <div x-transition class="grid">
+        <template x-for="(item, i) in recurringItems || []" :key="i">
+            <div>
+                <!--Card-->
+                <article class="dense">
+                    <header>
+                        <nav>
+                            <ul>
+                                <li>
+                            </ul>
+                        </nav>
+                    </header>
+                    <figure>
+                        <img style="max-height:200px; max-width: 200px;" :src="item.Image" :alt="item.Title" />
+                    </figure>
+                    <div x-text="item.Title"></div>
+                    <footer>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <div x-text="`$ ${item.Amount}.00`"></div>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <button @@click="addToCart(item)">Add</button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </footer>
+                </article>
+            </div>
+        </template>
+
+        <template x-if="items == null || items.length == 0">
+            <article class="flat">
+                <header><strong>No products found</strong></header>
+            </article>
+        </template>
+    </div>
+</section>

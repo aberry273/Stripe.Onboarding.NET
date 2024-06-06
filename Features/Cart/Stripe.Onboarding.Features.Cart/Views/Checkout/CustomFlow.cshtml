@@ -1,0 +1,130 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http
+@model Stripe.Onboarding.Features.Cart.Models.Views.CheckoutPage
+
+@{
+    var cartId = Model.Cart != null ? @Model.Cart.Id.ToString() : "";
+}
+<div>checkout</div>
+
+<!--Card-->
+<article 
+    class="dense"
+    x-data="{
+        clientSecret: null,
+        message: '',
+        complete: false,
+        stripe: {},
+        elements: null,
+        async init() {
+            this.stripe = Stripe('@Model.PublicKey');
+            const clientSecret = new URLSearchParams(window.location.search).get('payment_intent_client_secret');
+            this.clientSecret  = clientSecret;
+            if (clientSecret) {
+                await this.getPaymentIntentStatus(clientSecret);
+            }
+            else {
+                await this.initialize();
+            }
+        },
+        async initialize() {
+            const response = await fetch('@Model.PostbackUrl', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cartId: '@cartId' }),
+            });
+            const { clientSecret } = await response.json();
+            console.log('init clientSecret');
+            console.log(clientSecret);
+            const appearance = {
+                theme: 'stripe',
+            };
+            this.elements = this.stripe.elements({ appearance, clientSecret });
+
+            const paymentElementOptions = {
+                layout: 'tabs',
+            };
+
+            const paymentElement = this.elements.create('payment', paymentElementOptions);
+            paymentElement.mount('#payment-element');
+        },
+        async submit() {
+            console.log('submit')
+            this.loading = true;
+            const elements = this.elements;
+            const { error } = await this.stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: '@Model.ReturnUrl',
+                },
+            });
+
+            // This point will only be reached if there is an immediate error when
+            // confirming the payment. Otherwise, your customer will be redirected to
+            // your `return_url`. For some payment methods like iDEAL, your customer will
+            // be redirected to an intermediate site first to authorize the payment, then
+            // redirected to the `return_url`.
+            if (error.type === 'card_error' || error.type === 'validation_error') {
+                showMessage(error.message);
+            } else {
+                showMessage('An unexpected error occurred.');
+            }
+            this.loading = false;
+        },
+        async getPaymentIntentStatus(clientSecret){
+            const { paymentIntent } = await this.stripe.retrievePaymentIntent(clientSecret);
+            let message = '';
+            switch (paymentIntent.status) {
+                case 'succeeded':
+                    message = 'Payment succeeded!';
+                    this.complete = true;
+                    //create order
+                    break;
+                case 'processing':
+                    message = 'Your payment is processing.';
+                    break;
+                case 'requires_payment_method':
+                    message = 'Your payment was not successful, please try again.';
+                    break;
+                default:
+                    message = 'Something went wrong.';
+                    break;
+            }
+            this.message = message;
+        }, 
+        return() {
+            window.location.replace('/home');
+        } 
+    }">
+    <header>
+        <nav>
+            Your cart
+        </nav>
+    </header>
+    <div>
+        <!-- Display a payment form -->
+        <template x-if="clientSecret">
+            <div x-text="message"></div>
+        </template>
+        <form id="payment-form" @@submit.prevent="submit()" x-show="!complete">
+            <div id="payment-element">
+                <!--Stripe.js injects the Payment Element-->
+            </div>
+            <button id="submit" :disabled="loading">
+                <div x-show="loading" class="spinner" id="spinner"></div>
+                <span id="button-text">Pay now</span>
+            </button>
+        </form>
+    </div>
+    <footer>
+        <nav>
+            <ul>
+                <li>
+                    <button x-show="!complete" @@click="return">Cancel</button>
+                    <button x-show="complete" @@click="return">Return</button>
+                </li>
+            </ul>
+        </nav>
+    </footer>
+</article> 

@@ -2,67 +2,112 @@
 @using System.Linq
 @using Microsoft.AspNetCore.Http
 @model Stripe.Onboarding.Features.Cart.Models.Views.CheckoutPage
-
-<div>checkout</div>
-
-<!--Card-->
-<div class="grid">
-
-    <article class="dense">
+@{
+    
+}
+<section x-data="{
+    userId: '@Model.UserId',
+    items: (@System.Text.Json.JsonSerializer.Serialize(Model.Cart.Items) || []),
+    async removeFromCart(item) {
+        const result = await this.$fetch.POST('@Model.CartPostbackUrl', {
+            userId: '@Model.UserId',
+            productId: item.Id,
+            quantity: 1,
+        })
+        this.$events.emit('removeFromCart', result);
+        if(result){
+            location.reload()
+        }
+    }
+}">
+    <nav>
         <header>
-            <nav>
-                <strong>Hosted Page</strong>
-            </nav>
+            <hgroup>
+                <h1>Checkout</h1>
+            </hgroup>
         </header>
-        <div>
-            For businesses that need to quickly implement payments, do not require additional customisation
-        </div>
-        <footer>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="/Cart/HostedPage">Try it out</a>
-                    </li>
-                </ul>
-            </nav>
-        </footer>
-    </article>
+        <ul>
+            @Model.UserId
+        </ul>
+    </nav> 
+    <!-- Filters -->
+    <div x-data>
+        <template x-for="(item, i) in items" :key="i">
+            <div>
+                <!--Card-->
+                <article class="dense">
+                    <nav>
+                        <ul>
 
-    <article class="dense">
-        <header>
-            <strong>Embedded Form</strong>
-        </header>
-        <div>
-            For businesses that need to quickly implement payments but want their users to stay on their site
-        </div>
-        <footer>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="/Cart/EmbeddedForm">Try it out</a>
-                    </li>
-                </ul>
-            </nav>
-        </footer>
-    </article>
+                            <figure>
+                                <img style="max-height:200px; max-width: 300px;" :src="item.Product.Image" :alt="item.Title" />
+                            </figure>
+                        </ul>
+                   
+                        <ul>
 
-    <article class="dense">
-        <header>
-            <nav>
-                <strong>Custom Flow</strong>
-            </nav>
-        </header>
+                        <div style="padding:8px; text-align: left" x-text="item.Product.Title"></div>
+
+                        <footer>
+                            <nav>
+                                <ul>
+                                    <li>
+                                        <div x-text="`$ ${item.Product.Amount}.00`"></div>
+                                    </li>
+                                </ul>
+                                <ul>
+                                    <li>
+                                        <button @@click="removeFromCart(item.Product)">Remove</button>
+                                    </li>
+                                </ul>
+                            </nav>
+                            </footer>
+                        </ul>
+                    </nav>
+                </article>
+            </div>
+        </template>
+
+        <template x-if="items == null || items.length == 0">
+            <article class="flat">
+                <header><strong>No products in your cart</strong></header>
+            </article>
+        </template>
+    </div>
+
+    <!--Card-->
+    <template x-if="items.length > 0">
         <div>
-            For businesses that require a customised payment flow, typically non-standard eCommerce sites and products
+        <nav>
+            <header>
+                <hgroup>
+                    <h1>Pay by</h1>
+                </hgroup>
+            </header>
+        </nav>
+        <div class="grid">
+
+            <template x-for="(item, i) in (@System.Text.Json.JsonSerializer.Serialize(Model.PaymentOptions) || [])" :key="i">
+
+                <article class="dense">
+                    <header>
+                        <nav>
+                            <strong x-text="item.Title">Hosted Page</strong>
+                        </nav>
+                    </header>
+                    <div x-text="item.Description"></div>
+                    <footer>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a :href="item.Url">Try it out</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </footer>
+                </article>
+            </template>
         </div>
-        <footer>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="/Cart/CustomFlow">Try it out</a>
-                    </li>
-                </ul>
-            </nav>
-        </footer>
-    </article>
-</div>
+        </div>
+    </template>
+</section>

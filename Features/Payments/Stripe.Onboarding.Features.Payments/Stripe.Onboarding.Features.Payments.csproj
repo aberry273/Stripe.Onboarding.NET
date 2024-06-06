@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Common\Stripe.Onboarding.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Integrations.Stripe\Stripe.Onboarding.Foundations.Integrations.Stripe.csproj" />
+    <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Orders\Stripe.Onboarding.Foundations.Orders.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,26 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http
+@model Stripe.Onboarding.Features.Cart.Models.Views.ConfirmationPage
+
+<!--Card-->
+<article class="dense">
+    <header>
+        <nav>
+            Payment
+            <span x-text="@Model.Status"></span>
+        </nav>
+    </header>
+    <div>
+        Your payment was successful! Thank you for your purchase <b x-text="@Model.CustomerEmail"></b>.
+    </div>
+    <footer>
+        <nav>
+            <ul>
+                <li>
+                    <button @@click="window.location.replace('/home');">Return</button>
+                </li>
+            </ul>
+        </nav>
+    </footer>
+</article>

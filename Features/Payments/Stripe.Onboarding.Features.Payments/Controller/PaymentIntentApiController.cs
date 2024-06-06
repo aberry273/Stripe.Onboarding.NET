@@ -23,22 +23,5 @@ namespace Stripe.Onboarding.Features.Payment.Controller
             return 1400;
         }
 
-        [HttpPost]
-        public ActionResult PaymentIntent(PaymentIntentRequest request)
-        {
-            var paymentIntentService = new PaymentIntentService();
-            var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
-            {
-                Amount = CalculateOrderAmount(request.Items),
-                Currency = "nzd",
-                // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                {
-                    Enabled = true,
-                },
-            });
-
-            return Ok(new { clientSecret = paymentIntent.ClientSecret });
-        }
     }
 }

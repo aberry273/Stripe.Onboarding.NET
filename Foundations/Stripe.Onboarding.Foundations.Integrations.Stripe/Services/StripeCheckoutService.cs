@@ -15,6 +15,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
         IStripeClient _stripeClient { get; set; }
         SessionService _checkoutSessionService { get; set; }
         SetupIntentService _setupIntentService { get; set; }
+        PaymentIntentService _paymentIntentService { get; set; }
         public StripeCheckoutService(IOptions<StripeConfig> options)
         {
             _config = options.Value;
@@ -23,6 +24,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
 
             _checkoutSessionService = new SessionService(_stripeClient);
             _setupIntentService = new SetupIntentService(_stripeClient);
+            _paymentIntentService = new PaymentIntentService(_stripeClient);
         }
         public StripeConfig Config
         {
@@ -35,16 +37,31 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
         {
             return _checkoutSessionService.Create(options);
         }
+        public Session GetCheckoutSession(string id, SessionGetOptions options)
+        {
+            return _checkoutSessionService.Get(id, options);
+        }
         public Session GetCheckoutSession(string id)
         {
-            SessionGetOptions options = new SessionGetOptions()
-            {
-            };
             return _checkoutSessionService.Get(id);
         }
         public SetupIntent GetSetupIntent(string id)
         {
             return _setupIntentService.Get(id);
+        }
+
+        public PaymentIntent? CreatePaymentIntent(int orderAmount, string currency)
+        {
+            return _paymentIntentService.Create(new PaymentIntentCreateOptions
+            {
+                Amount = orderAmount,
+                Currency = currency,
+                // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true,
+                },
+            });
         }
     }
 }

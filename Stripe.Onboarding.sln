@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stripe.Onboarding.Foundatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stripe.Onboarding.Foundations.Authentication", "Foundations\Stripe.Onboarding.Foundations.Authentication\Stripe.Onboarding.Foundations.Authentication.csproj", "{7D9343F6-E1F9-4767-9D7D-CF8C910C9353}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stripe.Onboarding.Foundations.Orders", "Foundations\Stripe.Onboarding.Foundations.Orders\Stripe.Onboarding.Foundations.Orders.csproj", "{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,12 @@ Global
 		{7D9343F6-E1F9-4767-9D7D-CF8C910C9353}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7D9343F6-E1F9-4767-9D7D-CF8C910C9353}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
 		{7D9343F6-E1F9-4767-9D7D-CF8C910C9353}.Staging|Any CPU.Build.0 = Debug|Any CPU
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}.Staging|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +100,7 @@ Global
 		{781A8284-6000-441D-8FE0-1DAB44E232C3} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
 		{464591E1-18AC-4DF8-B1B9-087F9359239F} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
 		{7D9343F6-E1F9-4767-9D7D-CF8C910C9353} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
+		{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3584F311-FD8B-4D8A-9984-BE84EB37D3EE}

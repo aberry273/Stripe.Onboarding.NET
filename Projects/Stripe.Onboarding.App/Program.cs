@@ -56,6 +56,7 @@ builder.Services.AddSwaggerGen();
 Stripe.Onboarding.Foundations.Integrations.Stripe.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Stripe.Onboarding.Foundations.Products.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Stripe.Onboarding.Foundations.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Stripe.Onboarding.Foundations.Orders.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Features
 Stripe.Onboarding.Features.Cart.Startup.ConfigureServices(builder.Services, builder.Configuration);

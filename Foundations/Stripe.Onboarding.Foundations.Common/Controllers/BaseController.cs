@@ -21,7 +21,11 @@ namespace Stripe.Onboarding.Foundations.Common.Controllers
             {
                 new NavigationItem()
                 {
-                    Disabled = false,
+                    Href = "/",
+                    Text = "Products"
+                },
+                new NavigationItem()
+                {
                     Href = "/Cart/Checkout",
                     Text = "Cart"
                 },

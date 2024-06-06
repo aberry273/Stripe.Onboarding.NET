@@ -8,14 +8,12 @@ namespace Stripe.Onboarding.Foundations.Authentication.Services
 {
     public class MockAuthenticationService : IMockAuthenticationService
     {
-        Guid userId;
         public MockAuthenticationService()
         {
-            userId = Guid.NewGuid();
         }
         public Guid GetSessionUser()
         {
-            return userId;
+            return Guid.Empty;
         }
     }
 }

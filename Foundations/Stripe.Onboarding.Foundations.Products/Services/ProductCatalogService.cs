@@ -32,6 +32,15 @@ namespace Stripe.Onboarding.Foundations.Products.Services
                     Title = "Working in Public: The Making and Maintenance of Open Source",
                     Amount = 2800
                 },
+                new ProductItem()
+                {
+                    Image = "https://placehold.co/600x400",
+                    Title = "Book subscription",
+                    IsStripeProduct = true,
+                    Id = "prod_QEy1UjVZmGutpe",
+                    Amount = 1000,
+                    IsRecurring = true,
+                }
             };
         }
         public List<ProductItem> GetCatalog()

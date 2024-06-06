@@ -16,6 +16,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe
 
                 options.SecretKey = configuration[Constants.Settings.SecretKey];
                 options.PublicKey = configuration[Constants.Settings.PublicKey];
+                options.WebhookSecret = configuration[Constants.Settings.WebhookSecret];
             });
             // SERVICES
             services.AddTransient<IStripeCheckoutService, StripeCheckoutService>();

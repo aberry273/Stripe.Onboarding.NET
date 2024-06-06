@@ -12,6 +12,8 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
         StripeConfig Config { get; }
         Checkout.Session CreateSession(Checkout.SessionCreateOptions options);
         Checkout.Session GetCheckoutSession(string id);
+        Checkout.Session GetCheckoutSession(string id, Checkout.SessionGetOptions options);
         SetupIntent GetSetupIntent(string id);
+        PaymentIntent? CreatePaymentIntent(int orderAmount, string currency);
     }
 }
