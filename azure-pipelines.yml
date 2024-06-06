@@ -17,7 +17,7 @@ stages:
 
     variables:
       solution: '**/*.sln'
-      project: '**/Stripe.Onboarding.csproj'
+      project: '**/Stripe.Onboarding.App.csproj'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'      
 
