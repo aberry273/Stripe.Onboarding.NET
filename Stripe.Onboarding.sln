@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{B4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{63C4B2C9-2110-4BDB-AA63-36ECF7AA08C6}"
 	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
 		instructions.txt = instructions.txt
 		LICENSE = LICENSE
 		README.md = README.md
@@ -27,11 +28,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stripe.Onboarding.Foundatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stripe.Onboarding.Foundations.Integrations.Stripe", "Foundations\Stripe.Onboarding.Foundations.Integrations.Stripe\Stripe.Onboarding.Foundations.Integrations.Stripe.csproj", "{781A8284-6000-441D-8FE0-1DAB44E232C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stripe.Onboarding.Foundations.Products", "Foundations\Stripe.Onboarding.Foundations.Products\Stripe.Onboarding.Foundations.Products.csproj", "{464591E1-18AC-4DF8-B1B9-087F9359239F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stripe.Onboarding.Foundations.Products", "Foundations\Stripe.Onboarding.Foundations.Products\Stripe.Onboarding.Foundations.Products.csproj", "{464591E1-18AC-4DF8-B1B9-087F9359239F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stripe.Onboarding.Foundations.Authentication", "Foundations\Stripe.Onboarding.Foundations.Authentication\Stripe.Onboarding.Foundations.Authentication.csproj", "{7D9343F6-E1F9-4767-9D7D-CF8C910C9353}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stripe.Onboarding.Foundations.Authentication", "Foundations\Stripe.Onboarding.Foundations.Authentication\Stripe.Onboarding.Foundations.Authentication.csproj", "{7D9343F6-E1F9-4767-9D7D-CF8C910C9353}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stripe.Onboarding.Foundations.Orders", "Foundations\Stripe.Onboarding.Foundations.Orders\Stripe.Onboarding.Foundations.Orders.csproj", "{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stripe.Onboarding.Foundations.Orders", "Foundations\Stripe.Onboarding.Foundations.Orders\Stripe.Onboarding.Foundations.Orders.csproj", "{E2C2FC42-4AB6-482E-A5E6-0DF30AA19272}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
