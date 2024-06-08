@@ -9,8 +9,15 @@ namespace Stripe.Onboarding.Foundations.Orders.Models.Data
     }
     public class Order
     {
+        public BillingDetails CustomerBilling { get; set; } = new BillingDetails();
         public OrderStatus Status { get; set; } = OrderStatus.New;
-        public string CustomerEmail { get; set; }
+        public string CustomerEmail
+        {
+            get
+            {
+                return CustomerBilling.Email;
+            }
+        }
         public Guid UserId { get; set; }
         [NotMapped]
         public int Amount {
@@ -23,7 +30,8 @@ namespace Stripe.Onboarding.Foundations.Orders.Models.Data
         
         public int InvoicedAmount { get; set; }
         public string PaymentReference { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid CartId { get; set; }
+        public Guid Id { get; set; }
         public List<OrderProductItem> Items { get; set; } = new List<OrderProductItem>();
     }
 }

@@ -2,6 +2,7 @@
 using Stripe.Onboarding.Features.Cart.Controllers;
 using Stripe.Onboarding.Features.Cart.Models.Data;
 using Stripe.Onboarding.Features.Cart.Services;
+using Stripe.Onboarding.Features.Payments.Models.Data;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
 using Stripe.Onboarding.Foundations.Products.Services;
 
@@ -27,7 +28,7 @@ namespace Stripe.Onboarding.Features.Cart.Controller
 
             return Ok(new { status = session.RawJObject["status"], customer_email = session.RawJObject["customer_details"]["email"] });
         }
-         
+
         [HttpPost("add")]
         public async Task<IActionResult> AddToCart([FromBody] AddCartProductRequest request)
         {
@@ -83,13 +84,5 @@ namespace Stripe.Onboarding.Features.Cart.Controller
             }
         }
 
-        [HttpPost("paymentintent")]
-        public ActionResult PaymentIntent(PaymentIntentRequest request)
-        {
-            var cart = _cartSessionService.GetCartByCartId(request.CartId);
-            var orderAmount = cart.Items.Sum(x => x.Quantity * (x.Product.Amount * 100));
-            var paymentIntent = _stripeService.CreatePaymentIntent(orderAmount, cart.Currency);
-            return Ok(new { clientSecret = paymentIntent.ClientSecret });
-        }
     }
 }

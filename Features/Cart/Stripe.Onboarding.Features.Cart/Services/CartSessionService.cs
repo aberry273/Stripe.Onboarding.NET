@@ -19,7 +19,7 @@ namespace Stripe.Onboarding.Features.Cart.Services
                 return;
             }
             _cacheStore.Add(userId, cart);
-        }
+        } 
         public SessionCart GetCart(Guid userId)
         {
             var cart = (_cacheStore.ContainsKey(userId) ? _cacheStore[userId] : new SessionCart()) ?? new SessionCart();
@@ -45,6 +45,11 @@ namespace Stripe.Onboarding.Features.Cart.Services
             var sessionCartItem = cart.Items.FirstOrDefault(x => x.Product.Id == item.Id);
             cart.Items.Remove(sessionCartItem);
             SetCart(userId, cart);
+        }
+
+        public void ClearCart(Guid userId)
+        {
+            _cacheStore.Remove(userId);
         }
 
     }

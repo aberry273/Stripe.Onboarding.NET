@@ -15,6 +15,7 @@
     <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Integrations.Stripe\Stripe.Onboarding.Foundations.Integrations.Stripe.csproj" />
     <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Orders\Stripe.Onboarding.Foundations.Orders.csproj" />
     <ProjectReference Include="..\..\..\Foundations\Stripe.Onboarding.Foundations.Products\Stripe.Onboarding.Foundations.Products.csproj" />
+    <ProjectReference Include="..\..\Payments\Stripe.Onboarding.Features.Payments\Stripe.Onboarding.Features.Payments.csproj" />
   </ItemGroup>
 
 </Project>

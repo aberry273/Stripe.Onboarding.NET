@@ -9,7 +9,7 @@
         oid: '@Model.OrderId',
         status: '@Model.Status',
         init(){
-            if(status == 'paid'){
+            if(status == 'paid' || status == 'fulfilled'){
                 this.completed = true;
             }
             else {
@@ -26,6 +26,9 @@
         <div>
             Your payment was successful! Thank you for your purchase
         </div>
+        <p>
+            <b>Order id:</b> @Model.OrderId
+        </p>
         <p>
             <b>Billing email:</b> @Model.CustomerEmail
         </p>

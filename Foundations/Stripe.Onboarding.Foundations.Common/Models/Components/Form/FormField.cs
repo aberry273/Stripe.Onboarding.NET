@@ -10,7 +10,7 @@ namespace Stripe.Onboarding.Foundations.Common.Models.Components.Form
 {
     public enum FormFieldTypes
     {
-        input, email, textarea, number, password
+        input, email, textarea, password,// number,
     }
     public class FormField
     {

@@ -3,6 +3,7 @@ using Stripe.Onboarding.Features.Cart.Controllers;
 using Stripe.Onboarding.Features.Cart.Helpers;
 using Stripe.Onboarding.Features.Cart.Models.Data;
 using Stripe.Onboarding.Features.Cart.Services;
+using Stripe.Onboarding.Features.Payments.Models.Data;
 using Stripe.Onboarding.Foundations.Cart.Services;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
 using Stripe.Onboarding.Foundations.Orders.Models.Data;
@@ -24,21 +25,30 @@ namespace Stripe.Onboarding.Features.Cart.Controller
             _stripeService = stripeService;
             _cartSessionService = cartSessionService;
             _productCatalogService = productCatalogService;
-        }
-        // Move to shared service
-        private Order CreateOrderFromCart(Guid userId, SessionCart cart)
-        {
-            //Create order
-            var orderItems = cart.Items.Select(OrderHelper.CreateOrderProductItem).ToList();
-            var order = _orderService.CreateOrderFromCart(userId, orderItems);
-            return order;
-        }
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+        } 
+        [HttpPost("billing")]
+        public async Task<IActionResult> SetBillingDetails([FromBody] BillingDetails request)
         {
             try
             {
-                var cart = _cartSessionService.GetCartByCartId(request.CartId);
-                if(cart == null)
+                // Set the billing details
+                var order = _orderService.GetOrder(request.OrderId);
+                order.CustomerBilling = request;
+
+                _orderService.SaveOrder(order);
+                return Ok(request);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "There was a problem, please try again!" });
+            }
+        }
+        public async Task<IActionResult> UpdateOrder([FromBody] UpdateOrderRequest request)
+        {
+            try
+            {
+                var order = _orderService.GetOrder(request.OrderId);
+                if(order == null)
                 {
                     return NotFound(new { message = "There was a problem with your order, please contact support!" });
                 }
@@ -47,11 +57,9 @@ namespace Stripe.Onboarding.Features.Cart.Controller
                 {
                     return NotFound(new { message = "There was a problem with your payment, please contact support!" });
                 }
-                //TODO: Check user - if user service exists
-
-                var order = CreateOrderFromCart(request.UserId, cart);
                 // Redundant with the webhook implementation..
                 order.PaymentReference = request.PaymentIntentId;
+                order.InvoicedAmount = ((int)(paymentIntent.Amount / 100));
                 _orderService.SaveOrder(order);
 
                 return Ok(order);
@@ -60,6 +68,15 @@ namespace Stripe.Onboarding.Features.Cart.Controller
             {
                 return BadRequest(new { message = "There was a problem, please try again!" });
             }
+        }
+        [HttpPost("paymentintent")]
+        public ActionResult PaymentIntent(PaymentIntentRequest request)
+        {
+            var cart = _cartSessionService.GetCartByCartId(request.CartId);
+            var order = _orderService.GetOrder(request.OrderId);
+            var orderAmount = cart.Items.Sum(x => x.Quantity * (x.Product.Amount * 100));
+            var paymentIntent = _stripeService.CreatePaymentIntent(orderAmount, cart.Currency);
+            return Ok(new { clientSecret = paymentIntent.ClientSecret });
         }
     }
 }

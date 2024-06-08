@@ -55,6 +55,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\src\js\components\forms\fields\input.js" />
+    <None Include="wwwroot\src\js\components\forms\fields\select.js" />
+    <None Include="wwwroot\src\js\components\forms\fields\textArea.js" />
+    <None Include="wwwroot\src\js\components\forms\formAjax.js" />
+    <None Include="wwwroot\src\js\components\forms\formFields.js" />
+    <None Include="wwwroot\src\js\components\forms\formPostback.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Features\Cart\Stripe.Onboarding.Features.Cart\Stripe.Onboarding.Features.Cart.csproj" />
     <ProjectReference Include="..\..\Features\Payments\Stripe.Onboarding.Features.Payments\Stripe.Onboarding.Features.Payments.csproj" />
     <ProjectReference Include="..\..\Foundations\Stripe.Onboarding.Foundations.Authentication\Stripe.Onboarding.Foundations.Authentication.csproj" />

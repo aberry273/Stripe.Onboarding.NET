@@ -15,26 +15,26 @@ namespace Stripe.Onboarding.Foundations.Products.Services
             return new List<ProductItem>()
             {
                 new ProductItem() {
-                    Image = "https://placehold.co/600x400",
+                    Image = "/src/images/artofdoingscience.jpg",
                     Id = Guid.NewGuid().ToString(),
                     Title = "The Art of Doing Science and Engineering",
                     Amount = 23
                 },
                 new ProductItem() {
-                    Image = "https://placehold.co/600x400",
+                    Image = "/src/images/pirnceorpersia.jpg",
                     Id = Guid.NewGuid().ToString(),
                     Title = "The Making of Prince of Persia: Journals 1985-1993",
                     Amount = 25
                 },
                 new ProductItem() {
-                    Image = "https://placehold.co/600x400",
+                    Image = "/src/images/opensource.jpg",
                     Id = Guid.NewGuid().ToString(),
                     Title = "Working in Public: The Making and Maintenance of Open Source",
                     Amount = 28
                 },
                 new ProductItem()
                 {
-                    Image = "https://placehold.co/600x400",
+                    Image = "/src/images/bookclub.png",
                     Title = "Book subscription",
                     IsStripeProduct = true,
                     Id = "prod_QEy1UjVZmGutpe",

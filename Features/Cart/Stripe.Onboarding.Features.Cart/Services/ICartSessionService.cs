@@ -5,6 +5,7 @@ namespace Stripe.Onboarding.Features.Cart.Services
 {
     public interface ICartSessionService
     {
+        void ClearCart(Guid userId);
         SessionCart GetCart(Guid userId);
         SessionCart GetCartByCartId(Guid cartId);
         void AddToCart(Guid userId, ProductItem item, int quantity);

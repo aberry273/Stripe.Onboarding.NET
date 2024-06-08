@@ -1,20 +1,31 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
 @using Microsoft.AspNetCore.Http
+@using System.Text.Json
 @model Stripe.Onboarding.Features.Cart.Models.Views.CustomFlowPage
 
 @{
     var cartId = Model.Cart != null ? @Model.Cart.Id.ToString() : "";
+    var billingDetails = System.Text.Json.JsonSerializer.Serialize(Model.Order.CustomerBilling, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
 }
-<div>checkout</div>
-
-<!--Card-->
-<article 
-    class="dense"
-    x-data="{
+<nav>
+    <header>
+        <hgroup>
+            <h1>Checkout</h1>
+        </hgroup>
+    </header>
+</nav>
+<div x-data="{
+        hasBillingDetails: '@Model.Order.CustomerBilling.Email' != '',
+        billingDetails: (@billingDetails || {}),
         clientSecret: null,
         message: '',
         complete: false,
+        userId: '@Model.UserId',
+        orderId: '@Model.Order.Id',
         loading: false,
         stripe: {},
         elements: null,
@@ -23,12 +34,24 @@
             this.stripe = Stripe('@Model.PublicKey');
             const clientSecret = new URLSearchParams(window.location.search).get('payment_intent_client_secret');
             this.clientSecret  = clientSecret;
+                
             if (clientSecret) {
+                this.hasBillingDetails = true;
                 await this.getPaymentIntentStatus(clientSecret);
             }
-            else {
+            this.$events.on('@Model.PaymentForm.Event', async (result) => {
+                this.billingDetails = result;
                 await this.initialize();
+                this.hasBillingDetails = true;
+            })
+            
+            if(!this.hasBillingDetails){
+                this.loading = false;
+                return;
             }
+
+            await this.initialize();
+           
             this.loading = false;
         },
         async initialize() {
@@ -38,14 +61,19 @@
                 body: JSON.stringify({ cartId: '@cartId' }),
             });
             const { clientSecret } = await response.json();
-            
+
             const appearance = {
-                theme: 'stripe',
+                theme: 'night',
             };
             this.elements = this.stripe.elements({ appearance, clientSecret });
 
             const paymentElementOptions = {
                 layout: 'tabs',
+                fields: {
+                    //skip as we already collect
+                    name: 'never',
+                    email: 'never'
+                }
             };
 
             const paymentElement = this.elements.create('payment', paymentElementOptions);
@@ -82,9 +110,9 @@
                     const self = this;
                     message = 'Payment succeeded!';
                     this.complete = true;
-                    const order = await this.createOrder(paymentIntent);
-                    setTimeout(function() { 
-                        self.redirectToSuccessPage(order);
+                    const order = await this.updateOrder(paymentIntent);
+                    setTimeout(function() {
+                        self.redirectToSuccessPage();
                     }, 500);
                     //create order
                     break;
@@ -100,45 +128,66 @@
             }
             this.message = message;
         },
-        async createOrder(paymentIntent) {
+        async updateOrder(paymentIntent) {
             return await this.$fetch.POST('@Model.OrderApiPostbackUrl', {
-                userId: '@Model.UserId',
-                cartId: '@Model.Cart.Id',
+                userId: this.userId,
+                orderId: this.orderId,
                 paymentIntentId: paymentIntent.id,
             })
         },
         redirectToSuccessPage(order) {
-            window.location.replace('@Model.SuccessUrl?oid='+order.id)
+            window.location.replace('@Model.SuccessUrl?oid='+this.orderId)
         }
     }">
-    <header>
-        <nav>
-            Your cart
-        </nav>
-    </header>
-    <div>
-        <!-- Display a payment form -->
-        <template x-if="clientSecret">
-            <div x-text="message"></div>
-        </template>
-        <form id="payment-form" @@submit.prevent="submit()" x-show="!complete">
-            <div id="payment-element">
-                <!--Stripe.js injects the Payment Element-->
+    <!--PAyment Card-->
+        <article class="dense" x-show="!hasBillingDetails">
+            <header>
+                <nav>
+                    <b>Billing details</b>
+                </nav>
+            </header>
+            <div>
+                <div x-data="formAjax(@System.Text.Json.JsonSerializer.Serialize(Model.PaymentForm, new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    }))"></div>
+            </div>  
+        </article>
+    
+    <!--PAyment Card-->
+        <article   x-show="hasBillingDetails"
+            class="dense"
+           >
+            <header>
+                <nav>
+                    Complete payment
+                </nav>
+            </header>
+            <div>
+                <!-- Display a payment form -->
+                <template x-if="clientSecret">
+                    <div x-text="message"></div>
+                </template>
+               
+                <form id="payment-form" @@submit.prevent="submit()" x-show="!complete">
+                    <div id="payment-element">
+                        <!--Stripe.js injects the Payment Element-->
+                    </div>
+                    <button id="submit" :disabled="loading">
+                        <div x-show="loading" class="spinner" id="spinner"></div>
+                        <span id="button-text">Pay now</span>
+                    </button>
+                </form>
             </div>
-            <button id="submit" :disabled="loading">
-                <div x-show="loading" class="spinner" id="spinner"></div>
-                <span id="button-text">Pay now</span>
-            </button>
-        </form>
-    </div>
-    <footer>
-        <nav>
-            <ul>
-                <li>
-                    <button x-show="!complete" @@click="window.location.replace('/home');">Cancel</button>
-                    <button x-show="complete" @@click="window.location.replace('/home');">Return</button>
-                </li>
-            </ul>
-        </nav>
-    </footer>
-</article> 
+            <footer>
+                <nav>
+                    <ul>
+                        <li>
+                            <button x-show="!complete" @@click="window.location.replace('/home');">Cancel</button>
+                            <button x-show="complete" @@click="window.location.replace('/home');">Return</button>
+                        </li>
+                    </ul>
+                </nav>
+            </footer>
+        </article>
+</div>

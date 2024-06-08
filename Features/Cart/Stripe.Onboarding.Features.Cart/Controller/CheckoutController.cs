@@ -16,6 +16,7 @@ using Stripe.Onboarding.Foundations.Common.Models;
 using Stripe.Onboarding.Foundations.Common.Models.Components.Form;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
 using Stripe.Onboarding.Foundations.Orders.Models.Data;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading.Channels;
 using System.Web;
@@ -42,17 +43,68 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         }
 
         #region Checkout
-        private CustomFlowPage CreateCustomFlowPage(SessionCart cart)
+        private AjaxForm CreateCustomPaymentForm(Foundations.Orders.Models.Data.Order order)
+        {
+            return new AjaxForm()
+            {
+                //FixTop = true,
+                PostbackUrl = "/api/checkoutorder/billing",
+                Type = PostbackType.POST,
+                Event = "billling:submitted",
+                ActionEvent = "action:post",
+                Label = "Submit",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "OrderId",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "OrderId",
+                        Hidden = true,
+                        Disabled = true,
+                        Value = order.Id,
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Firstname",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Firstname",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Lastname",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Lastname",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Email",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Email",
+                        AriaInvalid = false
+                    },
+                },
+            };
+        }
+        private CustomFlowPage CreateCustomFlowPage(SessionCart cart, Guid userId)
         {
             var paymentModel = new CustomFlowPage(this.CreateBaseContent());
             paymentModel.Cart = cart;
             paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
             paymentModel.ReturnUrl = this.CustomFlowUrl();
             paymentModel.PublicKey = _stripeService.Config.PublicKey;
-            paymentModel.PostbackUrl = "/api/cartsession/paymentintent";
+            paymentModel.PostbackUrl = "/api/checkoutorder/paymentintent";
 
             paymentModel.SuccessUrl = this.SuccessUrl();
             paymentModel.OrderApiPostbackUrl = "/api/checkoutorder";
+
+            var order = CreateOrderFromCart(userId, cart);
+            _orderService.SaveOrder(order);
+            paymentModel.Order = order;
+            paymentModel.PaymentForm = CreateCustomPaymentForm(order);
             return paymentModel;
         }
         [HttpGet]
@@ -60,16 +112,14 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         public async Task<IActionResult> CustomFlow()
         {
             var userId = this.GetSessionUser();
-            var cart = _cartSessionService.GetCart(this.GetSessionUser());
-            var viewModel = this.CreateCustomFlowPage(cart);
+            var cart = _cartSessionService.GetCart(userId);
+            var viewModel = this.CreateCustomFlowPage(cart, userId);
            
             if(viewModel.CartItems == 0)
             {
                 return RedirectToAction("Checkout", "Cart");
             }
             
-            var order = CreateOrderFromCart(userId, cart);
-            _orderService.SaveOrder(order);
 
             return View(viewModel);
         }
@@ -99,8 +149,10 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         public Foundations.Orders.Models.Data.Order CreateOrderFromCart(Guid userId, SessionCart cart)
         {
             //Create order
+            var existingOrder = _orderService.GetOrderFromCartId(cart.Id);
+            if (existingOrder != null) return existingOrder;
             var orderItems = cart.Items.Select(OrderHelper.CreateOrderProductItem).ToList();
-            var order = _orderService.CreateOrderFromCart(userId, orderItems);
+            var order = _orderService.CreateOrderFromCart(userId, cart.Id, orderItems);
             return order;
         }
 
@@ -167,12 +219,15 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             {
                 return RedirectToAction("Error");
             }
-            paymentModel.OrderId = oid;
-            //var paymentIntent = _stripeService.GetPaymentIntent(order.PaymentReference, _stripeService.CustomerDetailsPaymentIntentOptions());
+            paymentModel.OrderId = order.Id.ToString();
             paymentModel.PaymentMethodReference = order.PaymentReference;
             paymentModel.OrderAmount = order.Amount;
+            paymentModel.CustomerEmail = order.CustomerEmail;
             paymentModel.InvoiceAmount = order.InvoicedAmount;
-            paymentModel.Status = "success";
+            if (order.Status == OrderStatus.Paid || order.Status == OrderStatus.Fulfilled)
+            {
+                this._cartSessionService.ClearCart(order.UserId);
+            }
             return View("/Views/Checkout/Success.cshtml", paymentModel);
         }
         private string GetCustomerEmail(Session session)
@@ -192,6 +247,10 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             var order = GetOrder(session.ClientReferenceId);
             paymentModel.OrderAmount = order.Amount;
             paymentModel.InvoiceAmount = order.InvoicedAmount;
+            if(order.Status == OrderStatus.Paid || order.Status == OrderStatus.Fulfilled)
+            {
+                this._cartSessionService.ClearCart(order.UserId);
+            }
             return View(paymentModel);
         }
         [HttpGet]

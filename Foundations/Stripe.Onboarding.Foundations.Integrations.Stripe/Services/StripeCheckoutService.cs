@@ -25,6 +25,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
             _checkoutSessionService = new SessionService(_stripeClient);
             _setupIntentService = new SetupIntentService(_stripeClient);
             _paymentIntentService = new PaymentIntentService(_stripeClient);
+            
         }
         public StripeConfig Config
         {
@@ -32,6 +33,15 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
             {
                 return _config;
             }
+        }
+        public Session GetSessionByIntentId(string intentId)
+        {
+            var sessions = _checkoutSessionService.List(new SessionListOptions()
+            {
+                PaymentIntent = intentId,
+                Limit = 1
+            });
+            return sessions?.FirstOrDefault();
         }
         public Session CreateSession(SessionCreateOptions options)
         {

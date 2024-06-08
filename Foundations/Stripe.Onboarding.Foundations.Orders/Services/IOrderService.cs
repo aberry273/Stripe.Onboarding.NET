@@ -7,6 +7,7 @@ namespace Stripe.Onboarding.Foundations.Cart.Services
     {
         Order GetOrder(Guid orderId);
         void SaveOrder(Order order);
-        Order CreateOrderFromCart(Guid userId, List<OrderProductItem> items);
+        Order GetOrderFromCartId(Guid cardId);
+        Order CreateOrderFromCart(Guid userId, Guid cartId, List<OrderProductItem> items);
     }
 }

@@ -4,6 +4,7 @@ using Stripe.Onboarding.Features.Payments.Models.Data;
 using Stripe.Onboarding.Foundations.Cart.Services;
 using Stripe.Onboarding.Foundations.Common.Models;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
+using System.Web.Helpers;
 
 namespace Stripe.Onboarding.Features.Payment.Controller
 {
@@ -69,7 +70,6 @@ namespace Stripe.Onboarding.Features.Payment.Controller
                         break;
                     case Events.PaymentIntentSucceeded:
                         var eventIntent = stripeEvent.Data.Object as Stripe.PaymentIntent;
-                        UpdatePaidOrder(eventIntent);
 
                         break;
                 }
@@ -82,27 +82,15 @@ namespace Stripe.Onboarding.Features.Payment.Controller
                 return BadRequest();
             }
         }
-        private void UpdatePaidOrder(Stripe.PaymentIntent intent)
-        {
-            // TODO: fill me in
-            // Retrieve the session. If you require line items in the response, you may include them by expanding line_items. 
-            Guid orderId;
-            Guid.TryParse(intent.Metadata["oid"], out orderId);
-            var order = _orderService.GetOrder(orderId);
-            order.CustomerEmail = intent.Customer != null ? intent.Customer.Email : intent.ReceiptEmail;
-            order.PaymentReference = intent.Id;
-            order.Status = Foundations.Orders.Models.Data.OrderStatus.Paid;
-            order.InvoicedAmount = (int)(intent.Amount / 100);
-            _orderService.SaveOrder(order);
-        }
         private void UpdatePaidOrder(Checkout.Session session)
         {
             // TODO: fill me in
             // Retrieve the session. If you require line items in the response, you may include them by expanding line_items. 
             Guid orderId;
             Guid.TryParse(session.ClientReferenceId, out orderId);
-            var order = _orderService.GetOrder(orderId); 
-            order.CustomerEmail = session.CustomerDetails != null ? session.CustomerDetails.Email : session.CustomerEmail;
+            var order = _orderService.GetOrder(orderId);
+            var email = session.CustomerDetails != null ? session.CustomerDetails.Email : session.CustomerEmail;
+            order.CustomerBilling.Email = email ?? order.CustomerBilling.Email;
             order.PaymentReference = session.PaymentIntentId;
             order.Status = Foundations.Orders.Models.Data.OrderStatus.Paid;
             order.InvoicedAmount = (int)(session.AmountTotal / 100);
