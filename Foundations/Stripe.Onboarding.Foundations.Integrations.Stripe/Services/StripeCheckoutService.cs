@@ -63,5 +63,29 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
                 },
             });
         }
+        public PaymentIntent? GetPaymentIntent(string paymentIntentId)
+        {
+            return _paymentIntentService.Get(paymentIntentId);
+        }
+        public PaymentIntent? GetPaymentIntent(string paymentIntentId, PaymentIntentGetOptions options)
+        {
+            return _paymentIntentService.Get(paymentIntentId, options);
+        }
+
+
+        public PaymentIntentGetOptions CustomerDetailsPaymentIntentOptions()
+        {
+            var options = new PaymentIntentGetOptions();
+            options.AddExpand("customer");
+            options.AddExpand("line_items");
+            return options;
+        }
+        public SessionGetOptions CustomerDetailsSessionDetailsOptions()
+        {
+            var options = new SessionGetOptions();
+            options.AddExpand("customer");
+            options.AddExpand("line_items");
+            return options;
+        }
     }
 }

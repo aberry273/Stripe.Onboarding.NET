@@ -4,15 +4,43 @@
 @model Stripe.Onboarding.Features.Cart.Models.Views.ConfirmationPage
 
 <!--Card-->
-<article class="dense">
+<article class="dense" x-data="{
+        completed: true,
+        oid: '@Model.OrderId',
+        status: '@Model.Status',
+        init(){
+            if(status == 'paid'){
+                this.completed = true;
+            }
+            else {
+                //check status
+            }
+        }
+    }">
     <header>
         <nav>
-            Payment
-            <span x-text="@Model.Status"></span>
+            Order confirmation
         </nav>
     </header>
-    <div>
-        Your payment was successful! Thank you for your purchase <b x-text="@Model.CustomerEmail"></b>.
+    <div x-show="completed">
+        <div>
+            Your payment was successful! Thank you for your purchase
+        </div>
+        <p>
+            <b>Billing email:</b> @Model.CustomerEmail
+        </p>
+        <p>
+            <b>Amount:</b> @Model.InvoiceAmount.ToString("C0")
+        </p>
+        <p>
+            <b>Payment Reference:</b> @Model.PaymentMethodReference
+        </p>
+    </div>
+    <div x-show="!completed">
+        <div>
+            Your payment is being processed
+        </div>
+        <div class="spinner" id="spinner"></div>
     </div>
     <footer>
         <nav>

@@ -10,12 +10,12 @@ namespace Stripe.Onboarding.Features.Cart.Hydrators
             if (data.IsStripeProduct)
             {
                 item.Product = data.Id;
-                item.UnitAmount = data.Amount;
+                item.UnitAmount = data.Amount * 100;
                 item.Currency = "NZD";
             }
             else
             {
-                item.UnitAmount = data.Amount;
+                item.UnitAmount = data.Amount * 100;
                 item.Currency = "NZD";
                 item.ProductData = new SessionLineItemPriceDataProductDataOptions()
                 {

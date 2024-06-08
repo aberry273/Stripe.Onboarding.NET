@@ -18,19 +18,19 @@ namespace Stripe.Onboarding.Foundations.Products.Services
                     Image = "https://placehold.co/600x400",
                     Id = Guid.NewGuid().ToString(),
                     Title = "The Art of Doing Science and Engineering",
-                    Amount = 2300
+                    Amount = 23
                 },
                 new ProductItem() {
                     Image = "https://placehold.co/600x400",
                     Id = Guid.NewGuid().ToString(),
                     Title = "The Making of Prince of Persia: Journals 1985-1993",
-                    Amount = 2500
+                    Amount = 25
                 },
                 new ProductItem() {
                     Image = "https://placehold.co/600x400",
                     Id = Guid.NewGuid().ToString(),
                     Title = "Working in Public: The Making and Maintenance of Open Source",
-                    Amount = 2800
+                    Amount = 28
                 },
                 new ProductItem()
                 {
@@ -38,7 +38,7 @@ namespace Stripe.Onboarding.Foundations.Products.Services
                     Title = "Book subscription",
                     IsStripeProduct = true,
                     Id = "prod_QEy1UjVZmGutpe",
-                    Amount = 1000,
+                    Amount = 10,
                     IsRecurring = true,
                 }
             };

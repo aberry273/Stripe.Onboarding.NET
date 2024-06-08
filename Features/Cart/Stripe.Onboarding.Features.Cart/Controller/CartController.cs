@@ -17,14 +17,11 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
 {
     public class CartController : BaseController
     {
-        IStripeCheckoutService _stripeService { get; set; }
         ICartSessionService _cartSessionService { get; set; }
         public CartController(
-            IStripeCheckoutService stripeService,
             ICartSessionService cartSessionService,
             IMockAuthenticationService authService) : base(authService)
         {
-            _stripeService = stripeService;
             _cartSessionService = cartSessionService;
         }
 
@@ -86,16 +83,7 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             return model;
         }  
          
-         
         #endregion
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Success()
-        {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-        
-            return View(paymentModel);
-        }
         public string HostedPageUrl()
         {
             return this.Url.Action(
@@ -119,63 +107,6 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
                 controller: "Checkout",
                 values: new {  },
                 protocol: Request.Scheme);
-        }
-        public string SuccessUrl(string message)
-        {
-            return this.Url.Action(
-                action: nameof(Success),
-                controller: "Payments",
-                values: new { message },
-                protocol: Request.Scheme);
-        }
-        public string ReturnUrl()
-        {
-            return this.Url.Action(
-                action: nameof(Success),
-                controller: "Payments",
-                values: new {  },
-                protocol: Request.Scheme);
-        }
-        public string CartReturnUrl()
-        {
-            return this.Url.Action(
-                action: nameof(Success),
-                controller: "Cart",
-                values: new { },
-                protocol: Request.Scheme);
-        } 
-        public string PaymentIntentUrl()
-        {
-            return this.Url.Action(
-                action: "PaymentIntent",
-                controller: "Payments",
-                values: new { },
-                protocol: Request.Scheme);
-        }
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Cancel()
-        {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-         
-            return View(paymentModel);
-        }
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Error()
-        {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent()); 
-            return View(paymentModel);
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Return([FromQuery] string session_id)
-        {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-
-            return View(paymentModel);
         }
     }
 }

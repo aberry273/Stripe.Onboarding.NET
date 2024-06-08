@@ -5,7 +5,7 @@ namespace Stripe.Onboarding.Foundations.Orders.Models.Data
 {
     public enum OrderStatus
     {
-        New, Paid, Fulfilled, Cancelled, Refunded
+        New, WaitingPayment, Paid, Fulfilled, Cancelled, Refunded
     }
     public class Order
     {
@@ -20,6 +20,8 @@ namespace Stripe.Onboarding.Foundations.Orders.Models.Data
                 return this.Items.Sum(x => x.Quantity * x.Product.Amount);
             }
         }
+        
+        public int InvoicedAmount { get; set; }
         public string PaymentReference { get; set; }
         public Guid Id { get; set; } = Guid.NewGuid();
         public List<OrderProductItem> Items { get; set; } = new List<OrderProductItem>();

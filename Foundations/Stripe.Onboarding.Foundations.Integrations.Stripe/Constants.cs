@@ -10,6 +10,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe
     {
         public struct Settings
         {
+            public const string StripeApiVersion = "2024-04-1";
             public const string ConfigName = "StripeConfiguration";
             public const string SecretKey = "StripeSecretKey";
             public const string PublicKey = "StripePublicKey";

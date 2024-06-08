@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controller\PaymentIntentApiController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Stripe.net" Version="44.11.0" />
   </ItemGroup>
 

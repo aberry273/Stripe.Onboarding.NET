@@ -12,6 +12,7 @@ namespace Stripe.Onboarding.Features.Cart
         {
             // SERVICES
             services.AddSingleton<ICartSessionService, CartSessionService>();
+            services.AddTransient<ICheckoutViewService, CheckoutViewService>();
         }
     }
 }

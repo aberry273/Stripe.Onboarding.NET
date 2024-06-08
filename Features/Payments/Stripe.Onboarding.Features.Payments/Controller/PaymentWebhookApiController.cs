@@ -22,6 +22,7 @@ namespace Stripe.Onboarding.Features.Payment.Controller
             _orderService = orderService;
         }
 
+
         [HttpPost("stripe")]
         public async Task<IActionResult> Stripe()
         {
@@ -34,48 +35,41 @@ namespace Stripe.Onboarding.Features.Payment.Controller
                   Request.Headers["Stripe-Signature"],
                   _stripeService.Config.WebhookSecret
                 );
-                Checkout.Session session = GetSession(stripeEvent);
-
-                // Handle the checkout.session.completed event
-                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
-                {
-                    // Fulfill the purchase...
-                    FulfillOrder(session);
-                }
+                Checkout.Session session;
                 
                 switch (stripeEvent.Type)
                 {
                     case Events.CheckoutSessionCompleted:
 
-                        // Save an order in your database, marked as 'awaiting payment'
-                        CreateOrder(session);
-
+                        session = GetSession(stripeEvent);
+                        //TODO: Include conditions when checking payment
+                        UpdatePaidOrder(session);
                         // Check if the order is paid (for example, from a card payment)
                         //
                         // A delayed notification payment will have an `unpaid` status, as
                         // you're still waiting for funds to be transferred from the customer's
                         // account.
-                        var orderPaid = session.PaymentStatus == "paid";
+                        // Fulfill the purchase
 
-                        if (orderPaid)
-                        {
-                            // Fulfill the purchase
-                            FulfillOrder(session);
-                        }
+                        // used by hosted page
+                        UpdateFulfillOrder(session); 
 
                         break;
                     case Events.CheckoutSessionAsyncPaymentSucceeded:
                         // Fulfill the purchase
-                        FulfillOrder(session);
+                        session = GetSession(stripeEvent);
+                        UpdatePaidOrder(session);
 
                         break;
                     case Events.CheckoutSessionAsyncPaymentFailed:
+                        session = stripeEvent.Data.Object as Checkout.Session;
                         // Send an email to the customer asking them to retry their order
                         EmailCustomerAboutFailedPayment(session);
+                        
                         break;
                     case Events.PaymentIntentSucceeded:
-                        // Send an email to the customer asking them to retry their order
-                        UpdateOrderWithPaymentIntent(session);
+                        var eventIntent = stripeEvent.Data.Object as Stripe.PaymentIntent;
+                        UpdatePaidOrder(eventIntent);
 
                         break;
                 }
@@ -88,31 +82,48 @@ namespace Stripe.Onboarding.Features.Payment.Controller
                 return BadRequest();
             }
         }
-        private void UpdateOrderWithPaymentIntent(Checkout.Session session)
+        private void UpdatePaidOrder(Stripe.PaymentIntent intent)
         {
             // TODO: fill me in
             // Retrieve the session. If you require line items in the response, you may include them by expanding line_items. 
             Guid orderId;
-            Guid.TryParse(session.ClientReferenceId, out orderId);
+            Guid.TryParse(intent.Metadata["oid"], out orderId);
             var order = _orderService.GetOrder(orderId);
-            order.PaymentReference = session.PaymentIntentId;
+            order.CustomerEmail = intent.Customer != null ? intent.Customer.Email : intent.ReceiptEmail;
+            order.PaymentReference = intent.Id;
+            order.Status = Foundations.Orders.Models.Data.OrderStatus.Paid;
+            order.InvoicedAmount = (int)(intent.Amount / 100);
             _orderService.SaveOrder(order);
         }
-        private void FulfillOrder(Checkout.Session session)
+        private void UpdatePaidOrder(Checkout.Session session)
         {
             // TODO: fill me in
             // Retrieve the session. If you require line items in the response, you may include them by expanding line_items. 
             Guid orderId;
             Guid.TryParse(session.ClientReferenceId, out orderId);
-            var order = _orderService.GetOrder(orderId);
-            StripeList<LineItem> lineItems = session.LineItems;
+            var order = _orderService.GetOrder(orderId); 
+            order.CustomerEmail = session.CustomerDetails != null ? session.CustomerDetails.Email : session.CustomerEmail;
+            order.PaymentReference = session.PaymentIntentId;
             order.Status = Foundations.Orders.Models.Data.OrderStatus.Paid;
+            order.InvoicedAmount = (int)(session.AmountTotal / 100);
+            _orderService.SaveOrder(order);
+        }
+        private void UpdateFulfillOrder(Checkout.Session session)
+        {
+            Guid orderId;
+            Guid.TryParse(session.ClientReferenceId, out orderId);
+            var order = _orderService.GetOrder(orderId);
+            order.Status = Foundations.Orders.Models.Data.OrderStatus.Fulfilled;
             _orderService.SaveOrder(order);
         }
 
-        private void CreateOrder(Checkout.Session session)
+        private void UpdateWaitingPaymentOrder(Checkout.Session session)
         {
-            // TODO: fill me in
+            Guid orderId;
+            Guid.TryParse(session.ClientReferenceId, out orderId);
+            var order = _orderService.GetOrder(orderId);
+            order.Status = Foundations.Orders.Models.Data.OrderStatus.WaitingPayment;
+            _orderService.SaveOrder(order);
         }
 
         private void EmailCustomerAboutFailedPayment(Checkout.Session session)
@@ -125,10 +136,13 @@ namespace Stripe.Onboarding.Features.Payment.Controller
             var session = stripeEvent.Data.Object as Checkout.Session;
             var options = new SessionGetOptions();
             options.AddExpand("line_items");
+            options.AddExpand("customer_details");
+            //options.AddExpand("customer_email");
+            options.AddExpand("invoice");
 
             // Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
             return _stripeService.GetCheckoutSession(session.Id, options);
-        }
+        } 
 
     }
 }

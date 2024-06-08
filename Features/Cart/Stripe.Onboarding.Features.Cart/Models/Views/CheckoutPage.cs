@@ -14,6 +14,9 @@ namespace Stripe.Onboarding.Features.Cart.Models.Views
         public string CartPostbackUrl { get; set; }
         public string ReturnUrl { get; set; }
         public string PostbackUrl { get; set; }
+
+        // Move to customflow specific page
+
         public string PublicKey { get; set; }
         public List<PaymentOption> PaymentOptions { get; set; }
         public SessionCart Cart { get; set; }

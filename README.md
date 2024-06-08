@@ -4,6 +4,8 @@
 This is a sandbox site for running stripe payments, as a part of the Solution Architect role. This is built on .NET 8, using AlpineJs for the front-end and PicoCSS for styling.
 
 This site is an MVC based build rather than SPA. However the front-end utilises templating and DOM manipulating through alpineJS.
+- All html/templates are stored in razor files (.cshtml)
+- All razor files are located in relevant feature project
 
 Public site: https://stripesandbox.azurewebsites.net
 
@@ -19,15 +21,12 @@ How to build, configure and run your application.
 3. Run the .NET app:
 `dotnet run .\src\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
 
-
 ### Frontend setup
 *Note: this is not relevant to the Stripe integration, but for a better understanding of how the frontend works - if you see x-data or init() functions*
 The frontend is build using AlpineJs and does not need any prebuild/task runners to run. All files are located within the /wwwroot/src/js/ file in the Stripe.Onboarding.App projects.
 To learn more about AlpineJS, see: https://alpinejs.dev/start-here
 
 The front-end is using PicoCSS (https://picocss.com/)
-
-
 
 ## Solution overview
 
@@ -38,7 +37,7 @@ All projects are built under the namespace Stripe.Onboarding
 
 #### Projects 
 - Applications and services that share feature/foundation components
-**1Stripe.Onboarding.App**
+**1 Stripe.Onboarding.App**
 - Currently the main project/bootstrap project for the website
 
 #### Features
@@ -62,11 +61,15 @@ All projects are built under the namespace Stripe.Onboarding
 **4. Stripe.Onboarding.Foundations.Common**
 - Shared components for each project
 
-How does the solution work? Which Stripe APIs does it use? How is your application architected?
+> How does the solution work? Which Stripe APIs does it use? How is your application architected?
 
 **Stripe Checkout**
 - This project only integrates with Stripe Checkout, providing users with the ability to checkout with the Hosted Page (redirect), Embedded Form (iFrame) or Custom Flow (integrated) checkout components.
 
+## User flow
+1. Add a new product to your cart, either one of the three books in our product range or a subscription to our book service
+2. Checkout with your cart
+*Note: If you have a subscription product in your cart, you cannot checkout with other items and vice versa*
 
 ## Problem state
 > How did you approach this problem? Which docs did you use to complete the project? What challenges did you encounter?
@@ -77,3 +80,12 @@ I was originally going to build a uCommerce/Umbraco site to have a more traditio
 > How you might extend this if you were building a more robust instance of the same application.
 
 While this site currently only integrates with the checkout products, I will continue to tweak it to implement more complex projects with Stripe. One potential example would be whether a PiX product can be built on Stripe.
+
+### TODOS
+1. Update logic for payment methods to be consistent with cart > order > payment > payment handler > order updates
+2. Payment Flow route methods to intercept updates (rather than landing on page and redirecting)
+3. Country selector
+4. Add billing/shipping details and other details (I.E List of invoices instead InvoicedAmount)
+4. Bundled/Combined subscription/one-off charge payments (intent/charges integrations w/ sequential stepped payment form)
+6. Improve the FE logic
+7. Refactor the BE code

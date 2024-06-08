@@ -87,8 +87,8 @@ namespace Stripe.Onboarding.Features.Cart.Controller
         public ActionResult PaymentIntent(PaymentIntentRequest request)
         {
             var cart = _cartSessionService.GetCartByCartId(request.CartId);
-            var orderAmount = cart.Items.Sum(x => x.Quantity * x.Product.Amount);
-            var paymentIntent = _stripeService.CreatePaymentIntent(orderAmount, "nzd");
+            var orderAmount = cart.Items.Sum(x => x.Quantity * (x.Product.Amount * 100));
+            var paymentIntent = _stripeService.CreatePaymentIntent(orderAmount, cart.Currency);
             return Ok(new { clientSecret = paymentIntent.ClientSecret });
         }
     }

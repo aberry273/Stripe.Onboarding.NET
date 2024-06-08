@@ -19,6 +19,14 @@ namespace Stripe.Onboarding.Features.Cart.Helpers
         {
             var model = new SessionLineItemPriceDataOptions();
             item.HydrateSessionLineItem(model);
+            if (item.IsRecurring)
+            {
+                model.Recurring = new SessionLineItemPriceDataRecurringOptions()
+                {
+                    Interval = "month",
+                    IntervalCount = 1,
+                };
+            }
             return model;
         }
     }

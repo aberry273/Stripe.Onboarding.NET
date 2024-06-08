@@ -29,6 +29,7 @@ namespace Stripe.Onboarding.App.Controllers
         {
             var cart = _cartSessionService.GetCart(this.GetSessionUser());
             var model = new ProductListingPage(this.CreateBaseContent());
+            model.Cart = cart;
             model.Catalog = _productCatalogService.GetCatalog();
             model.CartPostbackUrl = "/api/cartsession/add";
             model.CartItems = cart.Items?.Count() ?? 0;

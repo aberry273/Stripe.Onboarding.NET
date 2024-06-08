@@ -1,4 +1,5 @@
-﻿using Stripe.Onboarding.Foundations.Common.Models;
+﻿using Stripe.Onboarding.Features.Cart.Models.Data;
+using Stripe.Onboarding.Foundations.Common.Models;
 
 namespace Stripe.Onboarding.App.Models.View
 {
@@ -9,6 +10,7 @@ namespace Stripe.Onboarding.App.Models.View
             this.TopNavigation = page.TopNavigation;
             this.UserId = page.UserId;
         }
+        public SessionCart Cart { get; set; }
         public List<ProductItem> Catalog { get; set; }
         public string CartPostbackUrl { get; set; }
     }

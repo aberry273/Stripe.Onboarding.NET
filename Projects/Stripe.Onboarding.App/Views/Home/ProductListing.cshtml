@@ -3,22 +3,37 @@
     ViewData["Title"] = "Home page";
 }
 <section x-data="{
+    hasOneOff: null,
+    hasRecurring: null,
+    cart: @System.Text.Json.JsonSerializer.Serialize(Model.Cart),
     items: @System.Text.Json.JsonSerializer.Serialize(Model.Catalog),
     userId: '@Model.UserId',
+    init() {
+        if (this.cart.Items == null || this.cart.Items.length == 0) return;
+        const recurring = this.cart.Items.filter(x => x.Product.IsRecurring).length > 0;
+        console.log(recurring)
+        this.setRecurringLogic(recurring)
+    },
     get oneOffItems() {
         return this.items.filter(x => !x.IsRecurring);
     },
     get recurringItems() {
         return this.items.filter(x => x.IsRecurring);
     },
-    async addToCart(item) {
-        console.log('addToCart');
+    async addToCart(item, recurring = false) {
         const result = await this.$fetch.POST('@Model.CartPostbackUrl', {
             userId: '@Model.UserId',
             productId: item.Id,
             quantity: 1,
         })
+        if(!result) return;
+
         this.$events.emit('addToCart', result);
+        this.setRecurringLogic(recurring)
+    },
+    setRecurringLogic(recurring) {
+        this.hasRecurring = recurring;
+        this.hasOneOff = !recurring;
     }
 }">
     <nav>
@@ -54,7 +69,7 @@
                         </ul>
                         <ul>
                             <li>
-                                <button @@click="addToCart(item)">Add</button>
+                                <button @@click="addToCart(item)" :disabled="hasRecurring">Add</button>
                             </li>
                         </ul>
                     </nav>
@@ -102,7 +117,7 @@
                             </ul>
                             <ul>
                                 <li>
-                                    <button @@click="addToCart(item)">Add</button>
+                                    <button @@click="addToCart(item, true)" :disabled="hasOneOff">Add</button>
                                 </li>
                             </ul>
                         </nav>

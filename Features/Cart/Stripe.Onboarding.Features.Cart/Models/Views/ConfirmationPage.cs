@@ -11,7 +11,8 @@ namespace Stripe.Onboarding.Features.Cart.Models.Views
             this.TopNavigation = page.TopNavigation;
             this.UserId = page.UserId;
         }
-        
+        public string OrderId { get; set; }
+        public int InvoiceAmount { get; set; }
         public int OrderAmount { get; set; }
         public string? PaymentMethodReference { get; set; }
         //result

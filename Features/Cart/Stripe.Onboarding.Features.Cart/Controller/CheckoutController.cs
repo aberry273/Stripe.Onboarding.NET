@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Stripe.Checkout;
+using Stripe.Climate;
 using Stripe.Onboarding.Features.Cart.Helpers;
 using Stripe.Onboarding.Features.Cart.Hydrators;
 using Stripe.Onboarding.Features.Cart.Models.Data;
@@ -14,6 +16,7 @@ using Stripe.Onboarding.Foundations.Common.Models;
 using Stripe.Onboarding.Foundations.Common.Models.Components.Form;
 using Stripe.Onboarding.Foundations.Integrations.Stripe.Services;
 using Stripe.Onboarding.Foundations.Orders.Models.Data;
+using System.Security.Cryptography;
 using System.Threading.Channels;
 using System.Web;
 
@@ -24,72 +27,76 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         IStripeCheckoutService _stripeService { get; set; }
         ICartSessionService _cartSessionService { get; set; }
         IOrderService _orderService { get; set; }
+        ICheckoutViewService _checkoutViewService { get; set; }
         public CheckoutController(
             IStripeCheckoutService stripeService,
             ICartSessionService cartSessionService,
+            ICheckoutViewService checkoutViewService,
             IOrderService orderService,
             IMockAuthenticationService authService) : base(authService)
         {
             _stripeService = stripeService;
             _orderService = orderService;
             _cartSessionService = cartSessionService;
+            _checkoutViewService = checkoutViewService;
         }
 
         #region Checkout
-        public Form CreateCheckoutForm()
+        private CustomFlowPage CreateCustomFlowPage(SessionCart cart)
         {
-            var model = new Form()
-            {
-                Label = "Submit",
-                Fields = new List<FormField>()
-                {
-                    new FormField()
-                    {
-                        Name = "UserId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                    },
-                }
-            };
+            var paymentModel = new CustomFlowPage(this.CreateBaseContent());
+            paymentModel.Cart = cart;
+            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
+            paymentModel.ReturnUrl = this.CustomFlowUrl();
+            paymentModel.PublicKey = _stripeService.Config.PublicKey;
+            paymentModel.PostbackUrl = "/api/cartsession/paymentintent";
 
-            return model;
+            paymentModel.SuccessUrl = this.SuccessUrl();
+            paymentModel.OrderApiPostbackUrl = "/api/checkoutorder";
+            return paymentModel;
         }
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> CustomFlow()
         {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-            paymentModel.Cart = _cartSessionService.GetCart(this.GetSessionUser());
-            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
-            if(paymentModel.CartItems == 0)
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(this.GetSessionUser());
+            var viewModel = this.CreateCustomFlowPage(cart);
+           
+            if(viewModel.CartItems == 0)
             {
                 return RedirectToAction("Checkout", "Cart");
             }
-            paymentModel.ReturnUrl = this.CustomFlowUrl();
+            
+            var order = CreateOrderFromCart(userId, cart);
+            _orderService.SaveOrder(order);
+
+            return View(viewModel);
+        }
+
+        private CheckoutPage CreateEmbeddedFormPage(SessionCart cart)
+        {
+            var paymentModel = new CheckoutPage(this.CreateBaseContent());
+            paymentModel.Cart = cart;
+            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
+            paymentModel.PostbackUrl = this.SessionFormUrl();
             paymentModel.PublicKey = _stripeService.Config.PublicKey;
-            paymentModel.PostbackUrl = "/api/cartsession/paymentintent";
-            paymentModel.CartForm = this.CreateCheckoutForm();
-            return View(paymentModel);
+            return paymentModel;
         }
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> EmbeddedForm()
         {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-            paymentModel.Cart = _cartSessionService.GetCart(this.GetSessionUser());
-            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
-            if (paymentModel.CartItems == 0)
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(userId);
+            var viewModel = this.CreateEmbeddedFormPage(cart);
+            if (viewModel.CartItems == 0)
             {
                 return RedirectToAction("Checkout", "Cart");
             }
-            paymentModel.PostbackUrl = this.SessionFormUrl();
-            paymentModel.PublicKey = _stripeService.Config.PublicKey;
-            paymentModel.CartForm = this.CreateCheckoutForm();
-            return View(paymentModel);
+            return View(viewModel);
         }
-        public Order CreateOrderFromCart(Guid userId, SessionCart cart)
+        public Foundations.Orders.Models.Data.Order CreateOrderFromCart(Guid userId, SessionCart cart)
         {
             //Create order
             var orderItems = cart.Items.Select(OrderHelper.CreateOrderProductItem).ToList();
@@ -109,22 +116,17 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             }
             //Create order
             var order = CreateOrderFromCart(userId, cart);
+            var successUrl = this.SuccessRedirectUrl(order.Id.ToString()); 
+            var cancelUrl = this.CancelUrl("Cancel");
+            var options = _checkoutViewService.CreateHostedPageSessionOptions(cart, order, successUrl, cancelUrl);
 
-            var options = new SessionCreateOptions
-            {
-                LineItems = cart.Items.Select(StripeHelper.CreateLineItemData).ToList(),
-                Mode = "payment",
-                SuccessUrl = this.SuccessRedirectUrl(order.Id.ToString()),
-                CancelUrl = this.CancelUrl("Cancel"),
-                ClientReferenceId = order.Id.ToString(),
-            };
+            // If a subscription exists, add the ToS
+            _checkoutViewService.ApplySubscriptionConsent(cart, options);
             Session session = _stripeService.CreateSession(options);
-
             _orderService.SaveOrder(order);
-
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
-        }
+        } 
 
         //https://docs.stripe.com/checkout/embedded/quickstart
         [HttpPost]
@@ -133,28 +135,25 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         {
             var userId = this.GetSessionUser();
             var cart = _cartSessionService.GetCart(userId);
-            var options = new SessionCreateOptions
-            {
-                LineItems = cart.Items.Select(StripeHelper.CreateLineItemData).ToList(),
-                UiMode = "embedded",
-                ShippingAddressCollection = new SessionShippingAddressCollectionOptions
-                {
-                    AllowedCountries = new List<string>
-                    {
-                        "NZ",
-                        "AU"
-                    },
-                },
-                Mode = "payment",
-                ReturnUrl = this.ReturnUrl()+ "?session_id={CHECKOUT_SESSION_ID}",
-            };
-            Session session = _stripeService.CreateSession(options);
             var order = CreateOrderFromCart(userId, cart);
+
+            var returnUrl = this.ReturnUrl() + "?session_id={CHECKOUT_SESSION_ID}";
+            var options = this._checkoutViewService.CreateEmbeddedFormSessionOptions(cart, order, returnUrl);
+             
+            // If a subscription exists, add the ToS
+            _checkoutViewService.ApplySubscriptionConsent(cart, options);
+            Session session = _stripeService.CreateSession(options);
+            _orderService.SaveOrder(order);
 
             return Ok(new { clientSecret = session.RawJObject["client_secret"] });
         }
         #endregion
-
+        private Foundations.Orders.Models.Data.Order GetOrder(string oid)
+        {
+            Guid orderId;
+            Guid.TryParse(oid, out orderId);
+            return _orderService.GetOrder(orderId);
+        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -163,66 +162,64 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             ConfirmationPage paymentModel = new ConfirmationPage(this.CreateBaseContent());
             var request = HttpContext.Request;
             var oid = request.Query["oid"];
-            Guid orderId;
-            Guid.TryParse(oid, out orderId);
-            //TODO: Replace with order in the future 
-            var order = _orderService.GetOrder(orderId);
-            if(order == null)
+            var order = GetOrder(oid);
+            if (order == null)
             {
                 return RedirectToAction("Error");
             }
+            paymentModel.OrderId = oid;
+            //var paymentIntent = _stripeService.GetPaymentIntent(order.PaymentReference, _stripeService.CustomerDetailsPaymentIntentOptions());
             paymentModel.PaymentMethodReference = order.PaymentReference;
-            paymentModel.OrderAmount = order.Amount; 
+            paymentModel.OrderAmount = order.Amount;
+            paymentModel.InvoiceAmount = order.InvoicedAmount;
             paymentModel.Status = "success";
-            return View(paymentModel);
+            return View("/Views/Checkout/Success.cshtml", paymentModel);
         }
-
+        private string GetCustomerEmail(Session session)
+        {
+            return session.Customer != null ? session.Customer.Email : session.CustomerDetails.Email;
+        }
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Success([FromQuery] string session_id)
         {
-            ConfirmationPage paymentModel = new ConfirmationPage(this.CreateBaseContent());
-            var options = new SessionGetOptions();
-            options.AddExpand("customer");
-            options.AddExpand("line_items");
-            var session = _stripeService.GetCheckoutSession(session_id);
-            paymentModel.Status = session.Status;
-            paymentModel.CustomerEmail = session.CustomerEmail;
+            var paymentModel = new ConfirmationPage(this.CreateBaseContent());
+            var session = _stripeService.GetCheckoutSession(session_id, _stripeService.CustomerDetailsSessionDetailsOptions());
             paymentModel.PaymentMethodReference = session.PaymentIntentId;
+            paymentModel.OrderId = session.PaymentIntentId;
+            paymentModel.Status = session.Status;
+            paymentModel.CustomerEmail = GetCustomerEmail(session);
+            var order = GetOrder(session.ClientReferenceId);
+            paymentModel.OrderAmount = order.Amount;
+            paymentModel.InvoiceAmount = order.InvoicedAmount;
             return View(paymentModel);
         }
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Cancel()
         {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-         
-            return View(paymentModel);
+            return View(new CheckoutPage(this.CreateBaseContent()));
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Error()
         {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent()); 
-            return View(paymentModel);
+            return View(new CheckoutPage(this.CreateBaseContent()));
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Return([FromQuery] string session_id)
         {
-            CheckoutPage paymentModel = new CheckoutPage(this.CreateBaseContent());
-
-            return View(paymentModel);
+            return View(new CheckoutPage(this.CreateBaseContent()));
         }
 
 
         #region Urls
-
-        public string SuccessUrl(string message)
+        public string SuccessUrl()
         {
-            return this.GetRouteUrl(nameof(Success), "Checkout", message);
+            return this.GetRouteOrderUrl(nameof(SuccessRedirect), "Checkout");
         }
         public string SuccessRedirectUrl(string oid)
         {
@@ -233,10 +230,6 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             return this.GetRouteUrl(nameof(Cancel), "Checkout", message);
         }
         public string ReturnUrl()
-        {
-            return this.GetRouteUrl(nameof(Success), "Checkout");
-        }
-        public string CartReturnUrl()
         {
             return this.GetRouteUrl(nameof(Success), "Checkout");
         }
@@ -265,6 +258,11 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
                 values: new { oid },
                 protocol: Request.Scheme);
         }
+        #endregion
+
+
+        #region Stripe
+        // To move into a separate view service
         #endregion
     }
 }
