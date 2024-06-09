@@ -110,7 +110,10 @@ I was originally going to build a uCommerce/Umbraco site to have a more traditio
 ## Future state
 > How you might extend this if you were building a more robust instance of the same application.
 
-While this site currently only integrates with the checkout products, I will continue to tweak it to implement more complex projects with Stripe. One potential example would be whether a PiX product can be built on Stripe.
+- Cleanup the logic/code base, and update the webhook handling to include better order/payment mgmt
+- Separate our custom payment flows from stripe pages
+- Implement some event-driven design (CQRS or something similar)
+- Separate code from the cartcontroller into relevant projects
 
 ### TODOS
 1. Update logic for payment methods to be consistent with cart > order > payment > payment handler > order updates
