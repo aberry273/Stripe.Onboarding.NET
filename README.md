@@ -14,12 +14,19 @@ Public site: https://stripesandbox.azurewebsites.net
 ## Setup
 How to build, configure and run your application.
 
-### Backend setup
+### Backend setup (CLI - Broken)
+*note:* There is an issue when using the .NET CLI with missing nuget.config package, a pre-compiled zip is available here:
+
+
 1. Download and install .NET 8.0.2 (runtimes) https://dotnet.microsoft.com/en-us/download/dotnet/8.0
-2. Build the web project 
-`dotnet build .\src\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
-3. Run the .NET app:
-`dotnet run .\src\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
+2. restore the project dependencies from the root directory
+`dotnet restore stripe.onboarding.sln`
+3. Build the web project 
+`dotnet build stripe.onboarding.sln`
+4. Run the .NET app (debug - otherwise publish after build and run non-debug binaries):
+`dotnet run .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
+
+
 
 ### Frontend setup
 *Note: this is not relevant to the Stripe integration, but for a better understanding of how the frontend works - if you see x-data or init() functions*
@@ -30,6 +37,8 @@ The front-end is using PicoCSS (https://picocss.com/)
 
 ## Solution overview
 
+Sequence Diagram: https://static.swimlanes.io/11e0eb8a7422739f719510a80f5cef64.png
+
 ### Project setup
 This solution is structured in a way to enable monolith applications that can be easily separated into separate macro, mini or micro services.
 
@@ -39,15 +48,37 @@ All projects are built under the namespace Stripe.Onboarding
 - Applications and services that share feature/foundation components
 **1 Stripe.Onboarding.App**
 - Currently the main project/bootstrap project for the website
+- HomeController
+-- Renders the ProductListing catalog
 
 #### Features
 - Shared domain logic, feature projects can inherit and use as many foundation projects as required, but never require each other.
 **1. Stripe.Onboarding.Features.Cart**
 - Contains all cart/checkout logic
 - Inherits from Foundations.Common, Foundations.Integrations.Stripe, Foundations.Products, Foundations.Integrations.Authentication,
+
+- CartController
+-- Renders the Cart page showing the products in users cart and payment options
+
+- CheckoutController
+-- Renders the HostedPage, EmbeddedForm and CustomFlow pages
+-- Contains the Embedded Form Postback logic
+
+- CartSessionApiController
+-- API endpoints fro adding/removing products to cart
+
+- CartOrderApiController
+-- API endpoints for updating the order and billing details for the CustomFlow 
+
 **2. Stripe.Onboarding.Features.Payments**
 - This is not currently used for anything except the PaymentWebhooksApi
 - In time this project may be used for more lowlevel integration with stripe and non-checkout integrations and low level payment objects (Payment Intent, Charge integrations). 
+
+- PaymentsController
+-- Not used
+
+- PaymentWebhookApiController
+-- API endpoints for handling stripe webhooks
 
 #### Foundations
 - Core domain specific logic, foundation projects are isolated libraries used by Features and Projects.

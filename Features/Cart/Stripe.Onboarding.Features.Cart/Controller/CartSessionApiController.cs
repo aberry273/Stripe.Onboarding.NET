@@ -47,17 +47,14 @@ namespace Stripe.Onboarding.Features.Cart.Controller
                 return BadRequest(new { message = "There was a problem, please try again!" });
             }
         }
-        [HttpPost("remove")]
-        public async Task<IActionResult> RemoveFromCart([FromBody] AddCartProductRequest request)
+
+        [HttpDelete("clear/{userId}")]
+        public async Task<IActionResult> Remove([FromRoute] Guid userId)
         {
             try
             {
-                var product = _productCatalogService.GetProduct(request.ProductId);
-                if (product == null)
-                {
-                    return NotFound(new { message = "There was a problem adding your product, please try again!" });
-                }
-                _cartSessionService.RemoveFromCart(request.UserId, product, request.Quantity);
+                _cartSessionService.ClearCart(userId);
+                
                 return Ok(true);
             }
             catch (Exception ex)
@@ -65,7 +62,6 @@ namespace Stripe.Onboarding.Features.Cart.Controller
                 return BadRequest(new { message = "There was a problem, please try again!" });
             }
         }
-
         [HttpGet("id")]
         public async Task<IActionResult> Cart([FromRoute] Guid id)
         {

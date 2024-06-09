@@ -9,7 +9,7 @@
     userId: '@Model.UserId',
     items: (@System.Text.Json.JsonSerializer.Serialize(Model.Cart.Items) || []),
     async removeFromCart(item) {
-        const result = await this.$fetch.POST('@Model.CartPostbackUrl', {
+        const result = await this.$fetch.POST('@Model.CartPostbackUrl/remove', {
             userId: '@Model.UserId',
             productId: item.Id,
             quantity: 1,
@@ -18,14 +18,23 @@
         if(result){
             location.reload()
         }
+    },
+    async clearCart() {
+        await this.$fetch.DELETE('@Model.CartPostbackUrl/clear/@Model.UserId')
+        location.reload()
     }
 }">
     <nav>
-        <header>
-            <hgroup>
+        <ul>
+            <header>
                 <h1>Checkout</h1>
-            </hgroup>
-        </header>
+            </header>
+        </ul>
+        <ul>
+            <li>
+                <button @@click="clearCart()">Clear cart</button>
+            </li>
+        </ul>
     </nav> 
     <!-- Filters -->
     <div x-data>

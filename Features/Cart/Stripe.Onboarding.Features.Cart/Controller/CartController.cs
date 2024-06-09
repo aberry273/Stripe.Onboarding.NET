@@ -35,7 +35,7 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             paymentModel.Cart = cart;
             paymentModel.CartForm = this.CreateCheckoutForm();
             paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
-            paymentModel.CartPostbackUrl = "/api/cartsession/remove";
+            paymentModel.CartPostbackUrl = "/api/cartsession";
             paymentModel.PaymentOptions = this.CreatePaymentOptions();
             return View(paymentModel);
         }
