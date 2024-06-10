@@ -34,20 +34,21 @@ The front-end is using PicoCSS (https://picocss.com/)
 
 
 ### Local dev setup
-This solution uses webhooks, when running locally tests make sure you route the stripe webhooks to your local machine.
+This solution uses webhooks, when running locally tests make sure you route the stripe webhooks to your local machine. This will require getting the following keys from your stripe account:
 
-1. Update the Stripe secrets foor your Stripe account on your local machine using the following cmds:
+1. Get the stripe secret and publuc key using the following instructions: https://docs.stripe.com/keys
 
-`
-dotnet user-secrets set "StripeSecretKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj
-dotnet user-secrets set "StripePublicKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj
-dotnet user-secrets set "StripeWebhookSecret" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj
-`
+2. Retrieve the local webhook signing secret (endpointSecret) from https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local 
 
-2. Follow the local webhook instructions for Stripe at: see: https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local on your machine
+3. Update the Stripe secrets foor your Stripe account on your local machine using the following cmds:
 
-3. Test that you are receiving the webhooks within the command by performing a test transaction
+`dotnet user-secrets set "StripeSecretKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
+`dotnet user-secrets set "StripePublicKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
+`dotnet user-secrets set "StripeWebhookSecret" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
 
+4. Follow the local webhook instructions for Stripe at: see: https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local on your machine
+
+5. Test that you are receiving the webhooks within the command by performing a test transaction
 
 ## Solution overview
 
