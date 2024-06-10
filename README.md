@@ -17,7 +17,6 @@ How to build, configure and run your application.
 ### Backend setup (CLI - Broken)
 *note:* There is an issue when using the .NET CLI with missing nuget.config package, a pre-compiled zip is available here:
 
-
 1. Download and install .NET 8.0.2 (runtimes) https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 2. restore the project dependencies from the root directory
 `dotnet restore stripe.onboarding.sln`
@@ -26,14 +25,29 @@ How to build, configure and run your application.
 4. Run the .NET app (debug - otherwise publish after build and run non-debug binaries):
 `dotnet run .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
 
-
-
 ### Frontend setup
 *Note: this is not relevant to the Stripe integration, but for a better understanding of how the frontend works - if you see x-data or init() functions*
 The frontend is build using AlpineJs and does not need any prebuild/task runners to run. All files are located within the /wwwroot/src/js/ file in the Stripe.Onboarding.App projects.
 To learn more about AlpineJS, see: https://alpinejs.dev/start-here
 
 The front-end is using PicoCSS (https://picocss.com/)
+
+
+### Local dev setup
+This solution uses webhooks, when running locally tests make sure you route the stripe webhooks to your local machine.
+
+1. Update the Stripe secrets foor your Stripe account on your local machine using the following cmds:
+
+`
+dotnet user-secrets set "StripeSecretKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj
+dotnet user-secrets set "StripePublicKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj
+dotnet user-secrets set "StripeWebhookSecret" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj
+`
+
+2. Follow the local webhook instructions for Stripe at: see: https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local on your machine
+
+3. Test that you are receiving the webhooks within the command by performing a test transaction
+
 
 ## Solution overview
 
