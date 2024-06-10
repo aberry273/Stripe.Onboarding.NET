@@ -43,7 +43,9 @@ This solution uses webhooks, when running locally tests make sure you route the 
 3. Update the Stripe secrets foor your Stripe account on your local machine using the following cmds:
 
 `dotnet user-secrets set "StripeSecretKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
+
 `dotnet user-secrets set "StripePublicKey" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
+
 `dotnet user-secrets set "StripeWebhookSecret" "..." --project .\Projects\Stripe.Onboarding.App\Stripe.Onboarding.App.csproj`
 
 4. Follow the local webhook instructions for Stripe at: see: https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local on your machine
