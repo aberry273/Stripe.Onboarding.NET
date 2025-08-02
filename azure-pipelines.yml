@@ -6,7 +6,6 @@
 trigger:
 - dev
 
-
 stages:
 - stage: Build
   jobs: 
