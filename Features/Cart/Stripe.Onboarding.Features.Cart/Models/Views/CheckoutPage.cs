@@ -3,7 +3,7 @@ using Stripe.Onboarding.Foundations.Common.Models;
 using Stripe.Onboarding.Foundations.Common.Models.Components.Form;
 
 namespace Stripe.Onboarding.Features.Cart.Models.Views
-{
+{ 
     public class CheckoutPage : BasePage
     {
         public CheckoutPage(BasePage page)
@@ -14,6 +14,8 @@ namespace Stripe.Onboarding.Features.Cart.Models.Views
         public string CartPostbackUrl { get; set; }
         public string ReturnUrl { get; set; }
         public string PostbackUrl { get; set; }
+
+        public StripeList<Charge> Charges { get; set; }
 
         // Move to customflow specific page
 

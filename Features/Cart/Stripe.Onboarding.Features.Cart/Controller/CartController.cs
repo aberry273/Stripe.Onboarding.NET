@@ -5,6 +5,7 @@ using Stripe.Checkout;
 using Stripe.Onboarding.Features.Cart.Models.Data;
 using Stripe.Onboarding.Features.Cart.Models.Views;
 using Stripe.Onboarding.Features.Cart.Services;
+using Stripe.Onboarding.Features.Payments.Models.Views;
 using Stripe.Onboarding.Foundations.Authentication.Services;
 using Stripe.Onboarding.Foundations.Common.Controllers;
 using Stripe.Onboarding.Foundations.Common.Models;
@@ -24,6 +25,7 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
         {
             _cartSessionService = cartSessionService;
         }
+
 
         #region Checkout
         [HttpGet]

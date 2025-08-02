@@ -41,8 +41,158 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
             _cartSessionService = cartSessionService;
             _checkoutViewService = checkoutViewService;
         }
+         
+        
+        public Foundations.Orders.Models.Data.Order CreateOrderFromCart(Guid userId, SessionCart cart)
+        {
+            //Create order
+            var existingOrder = _orderService.GetOrderFromCartId(cart.Id);
+            if (existingOrder != null) return existingOrder;
+            var orderItems = cart.Items.Select(OrderHelper.CreateOrderProductItem).ToList();
+            var order = _orderService.CreateOrderFromCart(userId, cart.Id, orderItems);
+            return order;
+        }
 
-        #region Checkout
+
+        #region Customer charges
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Charges()
+        {
+            var paymentModel = new CheckoutPage(this.CreateBaseContent());
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(userId);
+            if (cart.Items.Count() == 0)
+            {
+                return RedirectToAction("Checkout", "Cart");
+            }
+            //Create order
+            var order = CreateOrderFromCart(userId, cart);
+            var stripCustomerId = "cus_QMU5mGC4CaJfXy";
+            paymentModel.Charges = _stripeService.GetCustomerCharges(stripCustomerId, 10);
+
+            return View(paymentModel);
+        }
+        #endregion
+
+        #region Hosted Page
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> HostedPage()
+        {
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(userId);
+            if (cart.Items.Count() == 0)
+            {
+                return RedirectToAction("Checkout", "Cart");
+            }
+            //Create order
+            var order = CreateOrderFromCart(userId, cart);
+            var successUrl = this.SuccessRedirectUrl(order.Id.ToString()); 
+            var cancelUrl = this.CancelUrl("Cancel");
+            var options = _checkoutViewService.CreateHostedPageSessionOptions(cart, order, successUrl, cancelUrl);
+
+            // If a subscription exists, add the ToS
+            _checkoutViewService.ApplySubscriptionConsent(cart, options);
+            Session session = _stripeService.CreateSession(options);
+            _orderService.SaveOrder(order);
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+
+        public string SuccessRedirectUrl(string oid)
+        {
+            return this.GetRouteOrderUrl(nameof(SuccessRedirect), "Checkout", oid);
+        }
+        #endregion
+        #region Embedded Form
+        private CheckoutPage CreateEmbeddedFormPage(SessionCart cart)
+        {
+            var paymentModel = new CheckoutPage(this.CreateBaseContent());
+            paymentModel.Cart = cart;
+            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
+            paymentModel.PostbackUrl = this.SessionFormUrl();
+            paymentModel.PublicKey = _stripeService.Config.PublicKey;
+            return paymentModel;
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> EmbeddedForm()
+        {
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(userId);
+            var viewModel = this.CreateEmbeddedFormPage(cart);
+            if (viewModel.CartItems == 0)
+            {
+                return RedirectToAction("Checkout", "Cart");
+            }
+            return View(viewModel);
+        }
+
+        //https://docs.stripe.com/checkout/embedded/quickstart
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateEmbeddedFormSession()
+        {
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(userId);
+            var order = CreateOrderFromCart(userId, cart);
+
+            var returnUrl = this.ReturnUrl() + "?session_id={CHECKOUT_SESSION_ID}";
+            var options = this._checkoutViewService.CreateEmbeddedFormSessionOptions(cart, order, returnUrl);
+             
+            // If a subscription exists, add the ToS
+            _checkoutViewService.ApplySubscriptionConsent(cart, options);
+            Session session = _stripeService.CreateSession(options);
+            _orderService.SaveOrder(order);
+
+            return Ok(new { clientSecret = session.RawJObject["client_secret"] });
+        }
+        public string ReturnUrl()
+        {
+            return this.GetRouteUrl(nameof(Success), "Checkout");
+        }
+        #endregion
+        #region Custom Flow
+        public string SuccessUrl()
+        {
+            return this.GetRouteOrderUrl(nameof(SuccessRedirect), "Checkout");
+        }
+        private CustomFlowPage CreateCustomFlowPage(SessionCart cart, Guid userId)
+        {
+            var paymentModel = new CustomFlowPage(this.CreateBaseContent());
+            paymentModel.Cart = cart;
+            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
+            paymentModel.ReturnUrl = this.CustomFlowUrl();
+            paymentModel.PublicKey = _stripeService.Config.PublicKey;
+            paymentModel.PostbackUrl = "/api/checkoutorder/paymentintent";
+
+            paymentModel.SuccessUrl = this.SuccessUrl();
+            paymentModel.OrderApiPostbackUrl = "/api/checkoutorder";
+
+            var order = CreateOrderFromCart(userId, cart);
+            _orderService.SaveOrder(order);
+            paymentModel.Order = order;
+            paymentModel.PaymentForm = CreateCustomPaymentForm(order);
+            return paymentModel;
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> CustomFlow()
+        {
+            var userId = this.GetSessionUser();
+            var cart = _cartSessionService.GetCart(userId);
+            var viewModel = this.CreateCustomFlowPage(cart, userId);
+
+            if (viewModel.CartItems == 0)
+            {
+                return RedirectToAction("Checkout", "Cart");
+            }
+
+
+            return View(viewModel);
+        }
         private AjaxForm CreateCustomPaymentForm(Foundations.Orders.Models.Data.Order order)
         {
             return new AjaxForm()
@@ -89,116 +239,7 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
                 },
             };
         }
-        private CustomFlowPage CreateCustomFlowPage(SessionCart cart, Guid userId)
-        {
-            var paymentModel = new CustomFlowPage(this.CreateBaseContent());
-            paymentModel.Cart = cart;
-            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
-            paymentModel.ReturnUrl = this.CustomFlowUrl();
-            paymentModel.PublicKey = _stripeService.Config.PublicKey;
-            paymentModel.PostbackUrl = "/api/checkoutorder/paymentintent";
 
-            paymentModel.SuccessUrl = this.SuccessUrl();
-            paymentModel.OrderApiPostbackUrl = "/api/checkoutorder";
-
-            var order = CreateOrderFromCart(userId, cart);
-            _orderService.SaveOrder(order);
-            paymentModel.Order = order;
-            paymentModel.PaymentForm = CreateCustomPaymentForm(order);
-            return paymentModel;
-        }
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> CustomFlow()
-        {
-            var userId = this.GetSessionUser();
-            var cart = _cartSessionService.GetCart(userId);
-            var viewModel = this.CreateCustomFlowPage(cart, userId);
-           
-            if(viewModel.CartItems == 0)
-            {
-                return RedirectToAction("Checkout", "Cart");
-            }
-            
-
-            return View(viewModel);
-        }
-
-        private CheckoutPage CreateEmbeddedFormPage(SessionCart cart)
-        {
-            var paymentModel = new CheckoutPage(this.CreateBaseContent());
-            paymentModel.Cart = cart;
-            paymentModel.CartItems = paymentModel.Cart.Items?.Count() ?? 0;
-            paymentModel.PostbackUrl = this.SessionFormUrl();
-            paymentModel.PublicKey = _stripeService.Config.PublicKey;
-            return paymentModel;
-        }
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> EmbeddedForm()
-        {
-            var userId = this.GetSessionUser();
-            var cart = _cartSessionService.GetCart(userId);
-            var viewModel = this.CreateEmbeddedFormPage(cart);
-            if (viewModel.CartItems == 0)
-            {
-                return RedirectToAction("Checkout", "Cart");
-            }
-            return View(viewModel);
-        }
-        public Foundations.Orders.Models.Data.Order CreateOrderFromCart(Guid userId, SessionCart cart)
-        {
-            //Create order
-            var existingOrder = _orderService.GetOrderFromCartId(cart.Id);
-            if (existingOrder != null) return existingOrder;
-            var orderItems = cart.Items.Select(OrderHelper.CreateOrderProductItem).ToList();
-            var order = _orderService.CreateOrderFromCart(userId, cart.Id, orderItems);
-            return order;
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> HostedPage()
-        {
-            var userId = this.GetSessionUser();
-            var cart = _cartSessionService.GetCart(userId);
-            if (cart.Items.Count() == 0)
-            {
-                return RedirectToAction("Checkout", "Cart");
-            }
-            //Create order
-            var order = CreateOrderFromCart(userId, cart);
-            var successUrl = this.SuccessRedirectUrl(order.Id.ToString()); 
-            var cancelUrl = this.CancelUrl("Cancel");
-            var options = _checkoutViewService.CreateHostedPageSessionOptions(cart, order, successUrl, cancelUrl);
-
-            // If a subscription exists, add the ToS
-            _checkoutViewService.ApplySubscriptionConsent(cart, options);
-            Session session = _stripeService.CreateSession(options);
-            _orderService.SaveOrder(order);
-            Response.Headers.Add("Location", session.Url);
-            return new StatusCodeResult(303);
-        } 
-
-        //https://docs.stripe.com/checkout/embedded/quickstart
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> CreateEmbeddedFormSession()
-        {
-            var userId = this.GetSessionUser();
-            var cart = _cartSessionService.GetCart(userId);
-            var order = CreateOrderFromCart(userId, cart);
-
-            var returnUrl = this.ReturnUrl() + "?session_id={CHECKOUT_SESSION_ID}";
-            var options = this._checkoutViewService.CreateEmbeddedFormSessionOptions(cart, order, returnUrl);
-             
-            // If a subscription exists, add the ToS
-            _checkoutViewService.ApplySubscriptionConsent(cart, options);
-            Session session = _stripeService.CreateSession(options);
-            _orderService.SaveOrder(order);
-
-            return Ok(new { clientSecret = session.RawJObject["client_secret"] });
-        }
         #endregion
         private Foundations.Orders.Models.Data.Order GetOrder(string oid)
         {
@@ -276,21 +317,9 @@ namespace Stripe.Onboarding.Features.Cart.Controllers
 
 
         #region Urls
-        public string SuccessUrl()
-        {
-            return this.GetRouteOrderUrl(nameof(SuccessRedirect), "Checkout");
-        }
-        public string SuccessRedirectUrl(string oid)
-        {
-            return this.GetRouteOrderUrl(nameof(SuccessRedirect), "Checkout", oid);
-        }
         public string CancelUrl(string message)
         {
             return this.GetRouteUrl(nameof(Cancel), "Checkout", message);
-        }
-        public string ReturnUrl()
-        {
-            return this.GetRouteUrl(nameof(Success), "Checkout");
         }
         public string SessionFormUrl()
         {

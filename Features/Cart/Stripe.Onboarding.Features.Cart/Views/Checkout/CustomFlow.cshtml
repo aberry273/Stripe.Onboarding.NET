@@ -65,7 +65,11 @@
             const appearance = {
                 theme: 'night',
             };
-            this.elements = this.stripe.elements({ appearance, clientSecret });
+
+            this.elements = this.stripe.elements({
+                appearance, 
+                clientSecret,
+            });
 
             const paymentElementOptions = {
                 layout: 'tabs',

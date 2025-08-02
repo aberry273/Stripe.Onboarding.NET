@@ -15,6 +15,7 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
         Checkout.Session GetCheckoutSession(string id, Checkout.SessionGetOptions options);
         SetupIntent GetSetupIntent(string id);
         Session GetSessionByIntentId(string intentId);
+        StripeList<Charge> GetCustomerCharges(string customerId, int limit = 10);
 
         public PaymentIntent? GetPaymentIntent(string paymentIntentId, PaymentIntentGetOptions options);
         PaymentIntent? GetPaymentIntent(string paymentIntentId);

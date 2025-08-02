@@ -1,17 +1,22 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
 @using Microsoft.AspNetCore.Http
-@model Stripe.Onboarding.Features.Payments.Models.Views.PaymentPage
+@model Stripe.Onboarding.Features.Cart.Models.Views.CheckoutPage
 
 <!--Card-->
 <article class="dense">
     <header>
         <nav>
-            View your charges
+            Payment
         </nav>
     </header>
     <div>
-        TODO
+        @foreach(var charge in Model.Charges)
+        {
+            <div>@charge.Id</div>
+            <div>@charge.Amount</div>
+        }
+        <div 
     </div>
     <footer>
         <nav>

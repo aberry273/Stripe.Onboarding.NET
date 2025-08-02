@@ -16,16 +16,18 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
         SessionService _checkoutSessionService { get; set; }
         SetupIntentService _setupIntentService { get; set; }
         PaymentIntentService _paymentIntentService { get; set; }
+        ChargeService _chargeService { get; set; }
         public StripeCheckoutService(IOptions<StripeConfig> options)
         {
             _config = options.Value;
              
             _stripeClient = new StripeClient(_config.SecretKey);
-
+            
             _checkoutSessionService = new SessionService(_stripeClient);
             _setupIntentService = new SetupIntentService(_stripeClient);
             _paymentIntentService = new PaymentIntentService(_stripeClient);
-            
+
+            _chargeService = new ChargeService(_stripeClient);
         }
         public StripeConfig Config
         {
@@ -33,6 +35,15 @@ namespace Stripe.Onboarding.Foundations.Integrations.Stripe.Services
             {
                 return _config;
             }
+        }
+        public StripeList<Charge> GetCustomerCharges(string customerId, int limit = 10)
+        {
+            var options = new ChargeListOptions()
+            {
+                Customer = customerId,
+                Limit = 10,
+            };
+            return _chargeService.List(options);
         }
         public Session GetSessionByIntentId(string intentId)
         {

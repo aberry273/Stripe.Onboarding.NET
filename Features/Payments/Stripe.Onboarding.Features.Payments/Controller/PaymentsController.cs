@@ -57,7 +57,6 @@ namespace Stripe.Onboarding.Features.Payments.Controllers
             return model;
         }
 
-
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Pay(PaymentIntentRequest model)
@@ -84,6 +83,7 @@ namespace Stripe.Onboarding.Features.Payments.Controllers
             return new StatusCodeResult(303);
         }
         #endregion
+
 
         #region
         [HttpGet]
