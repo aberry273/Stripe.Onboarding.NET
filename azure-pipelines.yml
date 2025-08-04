@@ -64,9 +64,9 @@ stages:
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Personal PAYG(070794bf-2979-487e-a00a-f7c72c5576f7)'
+        azureSubscription: 'Peerpay - PAYG(696b3830-053c-49ee-adee-47b1ac4899ea)'
         appType: 'webApp'
-        WebAppName: 'stripesandbox'
+        WebAppName: 'stripe-playground'
         DeploymentType: zipDeploy
         RemoveAdditionalFilesFlag: true
         SlotName: deploy        
