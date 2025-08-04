@@ -1,10 +1,22 @@
 export default function (data) {
     return {
         // PROPERTIES
+        mxFetch_url: '',
+        mxFetch_params: {},
+        mxFetch_loading: false,
+        // GET, POST, PUT, DELETE
+        mxFetch_type: 'POST',
         init() {
         },
         // GETTERS
         // METHODS
+        _mxFetch_setValues(params) {
+            params = params || {};
+            this.mxFetch_url = params.url;
+            this.mxFetch_params = params.mxFetch_params || {};
+            this.mxFetch_loading = params.mxFetch_loading || false;
+            this.mxFetch_type = params.type || 'POST';
+        },
         async _mxFetch_Get(url, data) {
             const urlParams = new URLSearchParams(data);
             return await fetch(url + '?' + urlParams)
@@ -25,7 +37,10 @@ export default function (data) {
                 body: isJson ? JSON.stringify(data) : data, // body data type must match "Content-Type" header
             })
             // parses JSON response into native JavaScript objects
-            const result = response.json();
+            const res = await response.text();
+            //check if empty response
+            if (res == null || res.length == 0) return null;
+            const result = JSON.parse(res);
             result.status = response.status;
             return result;
         },
@@ -44,7 +59,10 @@ export default function (data) {
                 body: isJson ? JSON.stringify(data) : data, // body data type must match "Content-Type" header
             })
             // parses JSON response into native JavaScript objects
-            const result = response.json();
+            const res = await response.text();
+            //check if empty response
+            if (res == null || res.length == 0) return null;
+            const result = JSON.parse(res);
             result.status = response.status;
             return result;
         },
@@ -63,7 +81,10 @@ export default function (data) {
                 //body: JSON.stringify(data), // body data type must match "Content-Type" header
             })
             // parses JSON response into native JavaScript objects
-            const result = response.json();
+            const res = await response.text();
+            //check if empty response
+            if (res == null || res.length == 0) return null;
+            const result = JSON.parse(res);
             result.status = response.status;
             return result;
         }

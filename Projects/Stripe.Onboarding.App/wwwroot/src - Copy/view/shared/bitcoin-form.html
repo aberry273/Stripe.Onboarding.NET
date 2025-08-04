@@ -1,0 +1,70 @@
+<form x-data="{inputData: 10}">
+  <label for="amount" x-text="headerData.title"></label>
+  <label for="amount">Amount to Send in Bitcoin</label>
+  <input
+    id="amount"
+    name="amount"
+    type="number"
+    min="0.001"
+    x-model="inputData"
+    step="0.001"
+    placeholder="0.01"
+    required
+  />
+  <small data-type="amount"><span data-type="usd" id="amount-usd"></span></small>
+  <label for="address">Recipient's Bitcoin Address </label>
+  <input
+    id="address"
+    name="address"
+    type="text"
+    placeholder="Enter Bitcoin address"
+    autocomplete="off"
+    required
+  />
+  <fieldset>
+    <label for="priority">Network Priority</label>
+    <input
+      id="priority"
+      name="priority"
+      list="priorities"
+      type="range"
+      min="1"
+      max="5"
+      step="1"
+      value="3"
+      list="priority"
+    />
+    <datalist id="priorities">
+      <option value="1">Min</option>
+      <option value="2">Low</option>
+      <option value="3">Medium</option>
+      <option value="4">High</option>
+      <option value="5">Max</option>
+    </datalist>
+  </fieldset>
+  <table>
+    <tbody>
+      <tr>
+        <td>Transaction Fees</td>
+        <td>
+          <div data-type="amount">
+            <span id="transaction-fees-btc" data-type="btc"></span>
+            <span id="transaction-fees-usd" data-type="usd"></span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>Total Received</td>
+        <td>
+          <div data-type="amount">
+            <span id="total-received-btc" data-type="btc"></span>
+            <span id="total-received-usd" data-type="usd"></span>
+          </div>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  <button type="submit">Send</button>
+</form>

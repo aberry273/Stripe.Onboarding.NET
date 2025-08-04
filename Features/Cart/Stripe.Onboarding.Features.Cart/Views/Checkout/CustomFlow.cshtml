@@ -39,7 +39,7 @@
                 this.hasBillingDetails = true;
                 await this.getPaymentIntentStatus(clientSecret);
             }
-            this.$events.on('@Model.PaymentForm.Event', async (result) => {
+            this.$events.On('@Model.PaymentForm.Event', async (result) => {
                 this.billingDetails = result;
                 await this.initialize();
                 this.hasBillingDetails = true;

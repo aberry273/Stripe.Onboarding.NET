@@ -21,6 +21,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
+    <script src="https://unpkg.com/cleave-zen@0.0.17/dist/cleave-zen.umd.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
 </head>
 
@@ -32,11 +33,11 @@
                 fixed: false,
                 cartItems: (@Model.CartItems || 0),
                 init() {
-                    this.$events.on('addToCart', (result) => {
-                        if (result) this.cartItems++;
+                    this.$events.On('addToCart', (response) => {
+                        if (response.result) this.cartItems++;
                     });
-                    this.$events.on('removeFromCart', (result) => {
-                        if (result) this.cartItems--;
+                    this.$events.On('removeFromCart', (response) => {
+                        if (response.result) this.cartItems--;
                     });
                 }
             }"
