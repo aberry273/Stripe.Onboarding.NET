@@ -1,0 +1,211 @@
+
+<!-- Feed panel -->
+
+
+
+<div x-data="{
+    item: $store.media.getDummyMedia(),
+    items: $store.media.getDummyMedia(),
+    userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    filterEvent: 'onFilterChange',
+    actionEvent: 'action:post',
+    quoteEvent: 'quote:post',
+    filterData: [
+      {
+        name: 'Rated',
+        values: ['All', 'Agreed', 'Disagreed'],
+        selected: 'All',
+        type: 'Select',
+      },
+      {
+        name: 'Quotes',
+        values: ['All', 'Agrees', 'Disagrees'],
+        selected: 'All',
+        type: 'Checkbox',
+      },
+      {
+        name: 'Tags',
+        values: ['C#'],
+        selected: 'C#',
+        type: 'Checkbox',
+      },
+      {
+        name: 'Type',
+        values: ['All', 'Text', 'Image', 'Video'],
+        selected: 'All',
+        type: 'Checkbox',
+      },
+      {
+        name: 'Sort',
+        values: ['Created', 'Updated', 'Top Rated', 'Bottom Rating'],
+        selected: 'All',
+        type: 'Radio',
+      }
+    ],
+    fields: [
+      {
+        name: 'QuoteIds',
+        type: 'list',
+        class: 'flat',
+        placeholder: 'Quotes',
+        autocomplete: null,
+        ariaInvalid: true,
+        hidden: false,
+        isArray: true,
+        helper: '',
+        value: [],
+        items: [],
+      },
+      {
+        name: 'Content',
+        type: 'textarea',
+        placeholder: 'Whats your update?',
+        autocomplete: null,
+        ariaInvalid: true,
+        helper: ''
+      },
+      {
+        name: 'Tags',
+        type: 'chips',
+        placeholder: 'Tag your post',
+        autocomplete: null,
+        ariaInvalid: true,
+        isArray: false,
+        helper: '',
+        value: [],
+        items: ['tag 123', 'tag 234']
+      },
+      {
+        name: 'UserId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        placeholder: 'Whats your update?',
+        autocomplete: null,
+        ariaInvalid: true,
+        helper: '',
+        value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+      },
+    ],
+    init() {
+      
+    }
+  }">
+  <nav>
+      <ul>
+          <header>
+              <hgroup>
+                  <h1>Media</h1>
+              </hgroup>
+          </header>
+      </ul>
+  </nav>
+  <!-- Filters -->
+  <div x-data="appNavFilters({
+    filters: filterData
+  })"></div>
+
+  <div x-data="gridCardMedia( {
+    actionUrl: 'https://localhost:7220/api/contentpostactivity',
+    searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+    filterEvent: filterEvent,
+    actionEvent: actionEvent,
+    quoteEvent: quoteEvent,
+    itemEvent: $store.wssContentPosts.getMessageEvent(),
+    items: items
+  })">
+</div>
+  <!-- Parent thread -->
+
+  <!-- Media grid-->
+
+</div>
+<!-- Modals -->
+<!-- Edit post -->
+<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123',
+form: {
+  postbackUrl: 'https://localhost:7220/api/contentpost',
+  postbackType: 'POST',
+  event: 'post:created',
+  fieldPlaceholder: 'Write a reply',
+  label: 'Reply',
+    fields: [
+      {
+        name: 'Content',
+        type: 'textarea',
+        placeholder: 'Write a reply',
+        autocomplete: null,
+        helper: '',
+        clearOnSubmit: true,
+      },
+      {
+        name: 'ParentId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: '$store.content.posts[0].id',
+      },
+      {
+        name: 'Status',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: 'Hidden',
+      },
+      {
+        name: 'ChannelId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: '$store.content.posts[0].channelId',
+      },
+      {
+        name: 'ThreadId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: '$store.content.posts[0].threadId',
+      },
+      {
+        name: 'Tags',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: '$store.content.posts[0].tags',
+      },
+      {
+        name: 'Category',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: '$store.content.posts[0].category',
+      },
+      {
+        name: 'UserId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: '$store.content.posts[0].userId',
+      },
+    ]
+}  })"></div>
+
+<!-- Delete post -->
+<div x-data="modal({target: 'modal-remove-post', title: 'Remove post', text: 'test 123' })"></div>
+
+<!-- Share post -->
+<div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>

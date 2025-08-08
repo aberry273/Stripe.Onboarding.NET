@@ -1,0 +1,6 @@
+
+<div x-data="$store.content" class="container feed">
+  <template x-for="post in $store.content.items" >
+    <div x-data="card(post)"></div>
+  </template>
+</div>

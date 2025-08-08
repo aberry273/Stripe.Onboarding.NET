@@ -25,10 +25,10 @@ export default function (data) {
             // Okay, do nothing from FE
         }
         if (data.status >= 400 && data.status <= 500) {
-            this.$events.emit('snackbar-information', { code: data.status, text: "Not found" });
+            this.$events.Emit('snackbar-information', { code: data.status, text: "Not found" });
         }
         if (data.status >= 500 && data.status <= 600) {
-            this.$events.emit('snackbar-error', { code: data.status, text: "Error processing request" });
+            this.$events.Emit('snackbar-error', { code: data.status, text: "Error processing request" });
         }
         this.resetValues(this.fields);
     })

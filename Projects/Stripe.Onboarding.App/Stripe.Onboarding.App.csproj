@@ -55,12 +55,34 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\src\css\app.scss" />
+    <None Include="wwwroot\src\css\components\_amount.scss" />
+    <None Include="wwwroot\src\css\components\_input-amount.scss" />
+    <None Include="wwwroot\src\css\components\_invoice-table.scss" />
+    <None Include="wwwroot\src\css\components\_priority-range.scss" />
+    <None Include="wwwroot\src\css\layout\_body.scss" />
+    <None Include="wwwroot\src\css\postcss.config.js" />
+    <None Include="wwwroot\src\css\theme\_dark.scss" />
+    <None Include="wwwroot\src\css\theme\_light.scss" />
+    <None Include="wwwroot\src\css\theme\_schemes.scss" />
+    <None Include="wwwroot\src\css\theme\_styles.scss" />
+    <None Include="wwwroot\src\js\alpine.esm.js" />
     <None Include="wwwroot\src\js\components\forms\fields\input.js" />
     <None Include="wwwroot\src\js\components\forms\fields\select.js" />
     <None Include="wwwroot\src\js\components\forms\fields\textArea.js" />
     <None Include="wwwroot\src\js\components\forms\formAjax.js" />
     <None Include="wwwroot\src\js\components\forms\formFields.js" />
     <None Include="wwwroot\src\js\components\forms\formPostback.js" />
+    <None Include="wwwroot\src\js\components\index.js" />
+    <None Include="wwwroot\src\js\init.js" />
+    <None Include="wwwroot\src\js\magics\events.js" />
+    <None Include="wwwroot\src\js\magics\fetch.js" />
+    <None Include="wwwroot\src\js\magics\index.js" />
+    <None Include="wwwroot\src\js\mixins\global\mxEvents.js" />
+    <None Include="wwwroot\src\js\mixins\global\mxFetch.js" />
+    <None Include="wwwroot\src\js\mixins\index.js" />
+    <None Include="wwwroot\src\js\mixins\mxForm.js" />
+    <None Include="wwwroot\src\js\mixins\mxResponsive.js" />
   </ItemGroup>
 
   <ItemGroup>

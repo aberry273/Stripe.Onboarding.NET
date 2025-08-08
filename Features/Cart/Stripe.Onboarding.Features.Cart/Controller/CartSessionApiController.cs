@@ -40,7 +40,7 @@ namespace Stripe.Onboarding.Features.Cart.Controller
                     return NotFound(new { message = "There was a problem adding your product, please try again!" });
                 }
                 _cartSessionService.AddToCart(request.UserId, product, request.Quantity);
-                return Ok(true);
+                return Ok(new { result = true });
             }
             catch(Exception ex)
             {
